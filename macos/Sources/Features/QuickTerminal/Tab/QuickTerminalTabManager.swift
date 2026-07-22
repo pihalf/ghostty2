@@ -189,8 +189,9 @@ class QuickTerminalTabManager: ObservableObject {
 
     func closeTab(_ tab: QuickTerminalTab, withConfirmation: Bool = true) {
         guard tabs.contains(where: { $0.id == tab.id }) else { return }
-        let close = { [weak self] in
-            self?.removeTab(tab, undoActionName: "Close Tab")
+        let close: () -> Void = { [weak self] in
+            guard let self else { return }
+            self.removeTab(tab, undoActionName: "Close Tab")
         }
         guard withConfirmation, let controller else {
             close()
