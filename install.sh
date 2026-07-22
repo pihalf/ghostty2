@@ -26,18 +26,31 @@ fail() {
     exit 1
 }
 
+status() {
+    printf 'ghostty2: %s\n' "$*" >&2
+}
+
 need() {
     command -v "$1" >/dev/null 2>&1 || fail "required command not found: $1"
 }
 
 download() {
+    asset=$1
     need curl
-    curl --proto '=https' --tlsv1.2 --fail --location --silent --show-error \
-        "$release_base/$1" --output "$install_tmp/$1"
+    progress=--silent
+    if [ -t 2 ]; then
+        progress=--progress-bar
+    fi
+
+    status "Downloading $asset..."
+    curl --proto '=https' --tlsv1.2 --fail --location --show-error \
+        --connect-timeout 15 --retry 3 --retry-delay 1 "$progress" \
+        "$release_base/$asset" --output "$install_tmp/$asset"
 }
 
 verify() {
     asset=$1
+    status "Verifying $asset..."
     checksum_file="$install_tmp/SHA256SUMS"
     expected=$(awk -v asset="$asset" '$2 == asset { print $1 }' "$checksum_file")
     [ -n "$expected" ] || fail "checksum not found for $asset"
@@ -64,6 +77,7 @@ case $(uname -s) in
         download "$asset"
         verify "$asset"
 
+        status "Extracting $asset..."
         unpacked="$install_tmp/unpacked"
         mkdir -p "$unpacked"
         /usr/bin/ditto -x -k "$install_tmp/$asset" "$unpacked"
@@ -71,6 +85,7 @@ case $(uname -s) in
 
         install_dir="${GHOSTTY2_INSTALL_DIR:-$HOME/Applications}"
         target="$install_dir/Ghostty2.app"
+        status "Installing Ghostty2.app in $install_dir..."
         mkdir -p "$install_dir"
         install_stage=$(mktemp -d "$install_dir/.ghostty2.XXXXXX")
         candidate="$install_stage/Ghostty2.app"
@@ -110,6 +125,7 @@ case $(uname -s) in
         asset="ghostty2-linux-$arch.flatpak"
         download "$asset"
         verify "$asset"
+        status "Installing the Flatpak bundle..."
         flatpak install --user --noninteractive --or-update "$install_tmp/$asset"
         printf 'Installed Ghostty². Launch it with: flatpak run io.github.pihalf.ghostty2\n'
         ;;
