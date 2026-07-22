@@ -1,0 +1,319 @@
+name: Ghostty² CI
+
+on:
+  push:
+    branches:
+      - main
+      - "agent/**"
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+env:
+  NIX_INSTALLER_DIAGNOSTIC_ENDPOINT: ""
+
+jobs:
+  privacy:
+    name: Privacy and generated assets
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Reject crash reporting and automatic updater code
+        shell: bash
+        run: |
+          set -euo pipefail
+          if rg --line-number --ignore-case \
+            'sentry|breakpad|sparkle|appcast|crash_report' \
+            build.zig build.zig.zon* src pkg macos dist flatpak; then
+            echo "Crash reporting or automatic updater code is present."
+            exit 1
+          fi
+          test "$(rg --count 'Deprecated compatibility option\. Ghostty²' src/config/Config.zig)" -eq 2
+          rg --fixed-strings \
+            'https://github.com/pihalf/ghostty2/releases' \
+            macos/Sources/App/macOS/AppDelegate.swift
+
+      - name: Check generated icons
+        run: |
+          python3 -m pip install \
+            --disable-pip-version-check \
+            --no-input \
+            --requirement images/requirements.txt
+          python3 images/generate-ghostty2-icons.py --check
+
+      - name: Check data and installer syntax
+        run: |
+          python3 -m json.tool build.zig.zon.json >/dev/null
+          python3 -m json.tool flatpak/zig-packages.json >/dev/null
+          python3 -m json.tool images/Ghostty.icon/icon.json >/dev/null
+          sh -n install.sh
+
+  linux:
+    name: Linux tests and GTK builds
+    needs: privacy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out the source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@630ae543ea3a38a9a4166f03376c02c50f408342 # v31.11.0
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Enable the Ghostty dependency cache
+        uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
+        with:
+          name: ghostty
+
+      - name: Check generated dependency inventories
+        run: nix develop -c ./nix/build-support/check-zig-cache.sh
+
+      - name: Check Zig formatting
+        run: nix develop -c zig fmt --check .
+
+      - name: Run the core test suite
+        run: nix develop -c zig build -Dapp-runtime=none test
+
+      - name: Build the Wayland application
+        run: |
+          nix develop -c zig build \
+            -Dapp-runtime=gtk \
+            -Dgtk-wayland=true \
+            -Dgtk-x11=false
+
+      - name: Build the X11 application
+        run: |
+          nix develop -c zig build \
+            -Dapp-runtime=gtk \
+            -Dgtk-wayland=false \
+            -Dgtk-x11=true
+
+      - name: Build and smoke-test the Nix package
+        run: |
+          nix build --print-build-logs .#ghostty2
+          test -x result/bin/ghostty2
+          result/bin/ghostty2 +version | tee /tmp/ghostty2-version
+          grep --fixed-strings 'Ghostty²' /tmp/ghostty2-version
+
+  macos:
+    name: macOS tests and universal app
+    needs: privacy
+    runs-on: macos-26
+    timeout-minutes: 120
+    steps:
+      - name: Check out the source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@33c9ab3ef95cd57c164d9d6eb1f9a46338538d41
+        with:
+          determinate: true
+
+      - name: Enable the Ghostty dependency cache
+        uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
+        with:
+          name: ghostty
+
+      - name: Show the Apple toolchain
+        run: |
+          xcodebuild -version
+          xcode-select --print-path
+          swift --version
+
+      - name: Resolve Zig dependencies
+        id: deps
+        run: |
+          nix build --print-build-logs .#deps
+          echo "path=$(readlink result)" >> "$GITHUB_OUTPUT"
+
+      - name: Run the Zig test suite
+        run: |
+          nix develop -c zig build test \
+            --system "${{ steps.deps.outputs.path }}" \
+            -Demit-macos-app=false \
+            -Demit-xcframework=false \
+            -Dtest-filter=""
+
+      - name: Build the native debug framework
+        run: |
+          nix develop -c zig build \
+            --system "${{ steps.deps.outputs.path }}" \
+            -Demit-macos-app=false \
+            -Dxcframework-target=native
+
+      - name: Run the Swift test suite
+        run: nix develop -c nu macos/build.nu --action test
+
+      - name: Determine the package version
+        id: version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            value="${GITHUB_REF_NAME#v}"
+          else
+            value="1.3.2-dev+${GITHUB_SHA:0:7}"
+          fi
+          echo "value=$value" >> "$GITHUB_OUTPUT"
+          echo "short=${value%%[-+]*}" >> "$GITHUB_OUTPUT"
+
+      - name: Build the universal release framework
+        run: |
+          nix develop -c zig build \
+            --system "${{ steps.deps.outputs.path }}" \
+            -Doptimize=ReleaseFast \
+            -Demit-macos-app=false \
+            -Dxcframework-target=universal \
+            -Dversion-string="${{ steps.version.outputs.value }}"
+
+      - name: Build Ghostty2.app
+        run: |
+          nix develop -c nu macos/build.nu \
+            --configuration ReleaseLocal \
+            --universal
+
+      - name: Finalize and verify the app
+        shell: bash
+        run: |
+          set -euo pipefail
+          app="macos/build/ReleaseLocal/Ghostty2.app"
+          plist="$app/Contents/Info.plist"
+          executable="$app/Contents/MacOS/ghostty2"
+          test -d "$app"
+          test -x "$executable"
+
+          /usr/libexec/PlistBuddy \
+            -c "Set :GhosttyCommit ${GITHUB_SHA:0:7}" "$plist"
+          /usr/libexec/PlistBuddy \
+            -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" "$plist"
+          /usr/libexec/PlistBuddy \
+            -c "Set :CFBundleShortVersionString ${{ steps.version.outputs.short }}" "$plist"
+
+          /usr/bin/codesign --force --sign - \
+            --entitlements macos/GhosttyReleaseLocal.entitlements \
+            "$app"
+          /usr/bin/codesign --verify --deep --strict --verbose=2 "$app"
+          plutil -lint "$plist"
+
+          archs=$(lipo -archs "$executable")
+          case " $archs " in
+            *" arm64 "*) ;;
+            *) echo "arm64 slice is missing"; exit 1 ;;
+          esac
+          case " $archs " in
+            *" x86_64 "*) ;;
+            *) echo "x86_64 slice is missing"; exit 1 ;;
+          esac
+
+          removed_frameworks=$(find "$app" \
+            \( -iname '*sparkle*' -o -iname '*sentry*' \) -print)
+          if [[ -n "$removed_frameworks" ]]; then
+            printf '%s\n' "$removed_frameworks"
+            echo "A removed reporting/updater framework was packaged."
+            exit 1
+          fi
+
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$app" ghostty2-macos-universal.zip
+
+      - name: Upload the macOS app
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ghostty2-macos
+          path: ghostty2-macos-universal.zip
+          if-no-files-found: error
+
+  flatpak:
+    name: Flatpak (${{ matrix.arch }})
+    needs: privacy
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      options: --privileged
+    steps:
+      - name: Check out the source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build the Flatpak bundle
+        uses: flatpak/flatpak-github-actions/flatpak-builder@401fe28a8384095fc1531b9d320b292f0ee45adb # v6.7
+        with:
+          bundle: ghostty2-linux-${{ matrix.arch }}.flatpak
+          manifest-path: flatpak/io.github.pihalf.ghostty2.yml
+          cache-key: ghostty2-flatpak-${{ matrix.arch }}-${{ github.sha }}
+          arch: ${{ matrix.arch }}
+          branch: stable
+          verbose: true
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - privacy
+      - linux
+      - macos
+      - flatpak
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: ghostty2-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Verify and checksum release artifacts
+        run: |
+          cd release-assets
+          test -f ghostty2-macos-universal.zip
+          test -f ghostty2-linux-x86_64.flatpak
+          test -f ghostty2-linux-aarch64.flatpak
+          sha256sum \
+            ghostty2-macos-universal.zip \
+            ghostty2-linux-x86_64.flatpak \
+            ghostty2-linux-aarch64.flatpak \
+            > SHA256SUMS
+          sha256sum --check SHA256SUMS
+
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            release-assets/ghostty2-macos-universal.zip \
+            release-assets/ghostty2-linux-x86_64.flatpak \
+            release-assets/ghostty2-linux-aarch64.flatpak \
+            release-assets/SHA256SUMS \
+            --verify-tag \
+            --latest \
+            --title "Ghostty² $GITHUB_REF_NAME" \
+            --notes-file RELEASE_NOTES.md

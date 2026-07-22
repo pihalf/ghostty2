@@ -7,6 +7,7 @@ def main [
     --scheme: string = "Ghostty"       # Xcode scheme (Ghostty, Ghostty-iOS, DockTilePlugin)
     --configuration: string = "Debug"  # Build configuration (Debug, Release, ReleaseLocal)
     --action: string = "build"         # xcodebuild action (build, test, clean, etc.)
+    --universal                        # Build both arm64 and x86_64 macOS slices
 ] {
     let project = ($env.FILE_PWD | path join "Ghostty.xcodeproj")
     let build_dir = ($env.FILE_PWD | path join "build")
@@ -15,6 +16,12 @@ def main [
     # special permissions.
     let skip_testing = if $action == "test" {
         [-skip-testing GhosttyUITests]
+    } else {
+        []
+    }
+
+    let architecture_args = if $universal {
+        ["ARCHS=arm64 x86_64" "ONLY_ACTIVE_ARCH=NO"]
     } else {
         []
     }
@@ -28,5 +35,6 @@ def main [
         -configuration $configuration
         $"SYMROOT=($build_dir)"
         ...$skip_testing
+        ...$architecture_args
         $action)
 }
