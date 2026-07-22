@@ -44,7 +44,7 @@ verify() {
 
     case $(uname -s) in
         Darwin)
-            actual=$(shasum -a 256 "$install_tmp/$asset" | awk '{ print $1 }')
+            actual=$(LC_ALL=C shasum -a 256 "$install_tmp/$asset" | awk '{ print $1 }')
             ;;
         *)
             need sha256sum

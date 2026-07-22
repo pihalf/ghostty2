@@ -1,5 +1,8 @@
 # Ghostty²
 
+This patch makes macOS installer checksum verification independent of the
+caller's locale, including shells configured with `C.UTF-8`.
+
 Ghostty² combines Ghostty's fast, native terminal with the two iTerm2 workflows this fork is built around:
 
 - A global Quake-style terminal, enabled by default with <kbd>Control</kbd>+<kbd>`</kbd>.
