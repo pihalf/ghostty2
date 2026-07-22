@@ -2638,8 +2638,8 @@ keybind: Keybinds = .{},
 /// On macOS, changing this configuration requires restarting Ghostty
 /// completely.
 ///
-/// Note: There is no default keybind for toggling the quick terminal.
-/// To enable this feature, bind the `toggle_quick_terminal` action to a key.
+/// The default global keybind is `ctrl+backquote` (Control+`). You can
+/// override or unbind it with the `toggle_quick_terminal` action.
 @"quick-terminal-position": QuickTerminalPosition = .top,
 
 /// The size of the quick terminal.
@@ -3905,6 +3905,25 @@ pub fn default(alloc_gpa: Allocator) Allocator.Error!Config {
     });
 
     return result;
+}
+
+test "default quick terminal hotkey is global" {
+    const testing = std.testing;
+    var cfg = try Config.default(testing.allocator);
+    defer cfg.deinit();
+
+    const trigger: inputpkg.Binding.Trigger = .{
+        .key = .{ .physical = .backquote },
+        .mods = .{ .ctrl = true },
+    };
+    const entry = cfg.keybind.set.get(trigger) orelse return error.TestUnexpectedResult;
+    const leaf = switch (entry.value_ptr.*) {
+        .leaf => |leaf| leaf,
+        else => return error.TestUnexpectedResult,
+    };
+
+    try testing.expect(leaf.flags.global);
+    try testing.expectEqual(.toggle_quick_terminal, std.meta.activeTag(leaf.action));
 }
 
 /// Load configuration from an iterator that yields values that look like
@@ -6413,6 +6432,16 @@ pub const Keybinds = struct {
         self.set = .{};
         self.tables = .empty;
         self.chain_target = .root;
+
+        // Ghostty2's quick terminal is available out of the box on supported
+        // macOS and Linux desktops. A physical key keeps the shortcut stable
+        // across keyboard layouts.
+        try self.set.putFlags(
+            alloc,
+            .{ .key = .{ .physical = .backquote }, .mods = .{ .ctrl = true } },
+            .{ .toggle_quick_terminal = {} },
+            .{ .global = true },
+        );
 
         // keybinds for opening and reloading config
         try self.set.put(
