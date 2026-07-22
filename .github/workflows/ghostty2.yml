@@ -22,7 +22,7 @@ env:
 
 jobs:
   privacy:
-    name: Privacy and generated assets
+    name: Removed dependencies and generated assets
     runs-on: ubuntu-24.04
     steps:
       - name: Check out the source
@@ -35,14 +35,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes ripgrep
 
-      - name: Reject crash reporting and automatic updater code
+      - name: Reject removed crash-capture and updater code
         shell: bash
         run: |
           set -euo pipefail
           if rg --line-number --ignore-case \
             'sentry|breakpad|sparkle|appcast|crash_report' \
             build.zig build.zig.zon* src pkg macos dist flatpak; then
-            echo "Crash reporting or automatic updater code is present."
+            echo "Removed crash-capture or automatic updater code is present."
             exit 1
           fi
           test "$(rg --count 'Deprecated compatibility option\. Ghostty²' src/config/Config.zig)" -eq 2

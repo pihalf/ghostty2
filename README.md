@@ -21,7 +21,6 @@ Ghostty² (`ghostty2`) is an independent [Ghostty](https://github.com/ghostty-or
 - **Global Quake terminal:** press <kbd>Control</kbd>+<kbd>`</kbd> to show or hide the same drop-down terminal from anywhere. The shortcut is enabled by default and can be changed with normal Ghostty keybind configuration.
 - **Tabs inside the quick terminal:** <kbd>Command</kbd>+<kbd>T</kbd> on macOS or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> on Linux creates another live terminal without leaving the drop-down window.
 - **Real multi-session behavior:** each tab keeps its own process and split tree while the quick terminal is hidden; tab switching, closing, moving, restoration, and close confirmation use the native platform UI.
-- **Privacy by construction:** no Sentry, Breakpad, crash uploads, analytics, or automatic updater. “Check for Updates…” only opens this fork's Releases page after you click it.
 - **Ghostty compatibility:** configuration stays in the existing Ghostty location, `TERM` remains `xterm-ghostty`, and internal `libghostty`/protocol identifiers are unchanged.
 
 The result is deliberately small in scope: if iTerm2 and Ghostty had a child, this is the part of the family resemblance we wanted most.
@@ -72,9 +71,9 @@ ghostty2 +toggle-quick-terminal
 
 For the Flatpak build, use `flatpak run io.github.pihalf.ghostty2 +toggle-quick-terminal`.
 
-## Privacy
+## Crash reports and updates
 
-Ghostty² does not initialize a crash-reporting SDK, upload crash dumps, collect product analytics, or contact an update feed in the background. The retained `auto-update` configuration names are inert compatibility keys so existing Ghostty configurations continue to parse. Network activity requested by terminal programs, hyperlinks, SSH helpers, package installation, or an explicit click on “Check for Updates…” is outside that promise and remains user initiated.
+Ghostty² does not include a crash-capture SDK or bundled updater. “Check for Updates…” opens this fork's Releases page on demand. The retained `auto-update` configuration names are inert compatibility keys so existing Ghostty configurations continue to parse.
 
 ## Development
 
@@ -83,7 +82,7 @@ zig build test
 zig fmt --check .
 ```
 
-The public CI additionally runs the Swift/macOS test suite, Linux core tests, GTK Wayland and X11 builds, privacy/icon checks, and distributable macOS and Flatpak builds.
+The public CI additionally runs the Swift/macOS test suite, Linux core tests, GTK Wayland and X11 builds, dependency/icon checks, and distributable macOS and Flatpak builds.
 
 See [HACKING.md](HACKING.md) for the upstream development environment and architecture notes.
 

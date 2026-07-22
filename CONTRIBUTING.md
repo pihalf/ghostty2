@@ -5,7 +5,7 @@ Thanks for helping improve Ghostty². Bug reports, feature ideas, and pull reque
 Before opening a change:
 
 1. Search the fork's issues and pull requests for related work.
-2. Keep changes focused on this fork's goals: the quick-terminal workflow, privacy, packaging, and compatibility with upstream Ghostty.
+2. Keep changes focused on this fork's goals: the quick-terminal workflow, dependency footprint, packaging, and compatibility with upstream Ghostty.
 3. Read [HACKING.md](HACKING.md) and the repository's `AGENTS.md` files for build and testing guidance.
 4. Run the narrowest relevant tests, then `zig fmt --check .` and `zig build test` when your environment supports them.
 5. Disclose any AI assistance and make sure you understand the submitted code.

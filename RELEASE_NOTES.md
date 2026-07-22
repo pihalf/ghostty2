@@ -7,7 +7,7 @@ Ghostty² combines Ghostty's fast, native terminal with the two iTerm2 workflows
 
 - A global Quake-style terminal, enabled by default with <kbd>Control</kbd>+<kbd>`</kbd>.
 - Multiple persistent tabs in the quick terminal: **Command+T** on macOS and **Control+Shift+T** on Linux.
-- No Sentry, Breakpad, analytics, crash uploads, background update checks, or automatic updater.
+- The local crash-capture dependencies and bundled macOS updater are omitted; “Check for Updates…” opens this fork's Releases page.
 - A universal macOS app plus x86_64 and aarch64 Linux Flatpak bundles, all covered by `SHA256SUMS`.
 
 Install the latest release:
