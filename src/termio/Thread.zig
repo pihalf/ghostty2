@@ -15,7 +15,6 @@ const std = @import("std");
 const ArenaAllocator = std.heap.ArenaAllocator;
 const builtin = @import("builtin");
 const xev = @import("../global.zig").xev;
-const crash = @import("../crash/main.zig");
 const internal_os = @import("../os/main.zig");
 const termio = @import("../termio.zig");
 const renderer = @import("../renderer.zig");
@@ -168,7 +167,7 @@ pub fn threadMain(self: *Thread, io: *termio.Termio) void {
                 const str =
                     \\Your system cannot allocate any more pty devices.
                     \\
-                    \\Ghostty requires a pty device to launch a new terminal.
+                    \\Ghostty² requires a pty device to launch a new terminal.
                     \\This error is usually due to having too many terminal
                     \\windows open or having another program that is using too
                     \\many pty devices.
@@ -188,7 +187,7 @@ pub fn threadMain(self: *Thread, io: *termio.Termio) void {
                     \\was too large, or the underlying pty failed to accept
                     \\the write.
                     \\
-                    \\Ghostty can't continue since it can't guarantee that
+                    \\Ghostty² can't continue since it can't guarantee that
                     \\initial terminal state will be as desired. Please review
                     \\the value of `input` in your configuration file and
                     \\ensure that all the path values exist and are readable.
@@ -242,13 +241,6 @@ fn threadMain_(self: *Thread, io: *termio.Termio) !void {
     if (builtin.os.tag.isDarwin()) {
         internal_os.macos.pthread_setname_np(&"io".*);
     }
-
-    // Setup our crash metadata
-    crash.sentry.thread_state = .{
-        .type = .io,
-        .surface = io.surface_mailbox.surface,
-    };
-    defer crash.sentry.thread_state = null;
 
     // Get the mailbox. This must be an SPSC mailbox for threading.
     const mailbox = switch (io.mailbox) {

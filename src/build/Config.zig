@@ -30,7 +30,6 @@ font_backend: FontBackend = .freetype,
 /// Feature flags
 x11: bool = false,
 wayland: bool = false,
-sentry: bool = true,
 simd: bool = true,
 i18n: bool = true,
 wasm_shared: bool = true,
@@ -179,20 +178,6 @@ pub fn init(b: *std.Build, appVersion: []const u8, libVersion: []const u8) !Conf
         "Build for Snap (do specific Snap operations). Only has an effect targeting Linux.",
     ) orelse false;
 
-    config.sentry = b.option(
-        bool,
-        "sentry",
-        "Build with Sentry crash reporting. Default for macOS is true, false for any other system.",
-    ) orelse sentry: {
-        switch (target.result.os.tag) {
-            .macos, .ios => break :sentry true,
-
-            // Note its false for linux because the crash reports on Linux
-            // don't have much useful information.
-            else => break :sentry false,
-        }
-    };
-
     config.simd = b.option(
         bool,
         "simd",
@@ -268,21 +253,8 @@ pub fn init(b: *std.Build, appVersion: []const u8, libVersion: []const u8) !Conf
         if (vsn.tag) |tag| {
             // Tip releases behave just like any other pre-release so we skip.
             if (!std.mem.eql(u8, tag, "tip")) {
-                const expected = b.fmt("v{d}.{d}.{d}", .{
-                    app_version.major,
-                    app_version.minor,
-                    app_version.patch,
-                });
-
-                if (!std.mem.eql(u8, tag, expected)) {
-                    @panic("tagged releases must be in vX.Y.Z format matching build.zig");
-                }
-
-                break :version .{
-                    .major = app_version.major,
-                    .minor = app_version.minor,
-                    .patch = app_version.patch,
-                };
+                break :version releaseVersionFromTag(app_version, tag) catch
+                    @panic("tagged releases must be semantic versions matching build.zig");
             }
         }
 
@@ -410,7 +382,7 @@ pub fn init(b: *std.Build, appVersion: []const u8, libVersion: []const u8) !Conf
     config.emit_terminfo = b.option(
         bool,
         "emit-terminfo",
-        "Install Ghostty terminfo source file",
+        "Install Ghostty² terminfo source file",
     ) orelse switch (target.result.os.tag) {
         .windows => true,
         else => switch (optimize) {
@@ -422,7 +394,7 @@ pub fn init(b: *std.Build, appVersion: []const u8, libVersion: []const u8) !Conf
     config.emit_termcap = b.option(
         bool,
         "emit-termcap",
-        "Install Ghostty termcap file",
+        "Install Ghostty² termcap file",
     ) orelse switch (optimize) {
         .Debug => true,
         .ReleaseSafe, .ReleaseFast, .ReleaseSmall => false,
@@ -431,7 +403,7 @@ pub fn init(b: *std.Build, appVersion: []const u8, libVersion: []const u8) !Conf
     config.emit_themes = b.option(
         bool,
         "emit-themes",
-        "Install bundled iTerm2-Color-Schemes Ghostty themes",
+        "Install bundled iTerm2-Color-Schemes Ghostty² themes",
     ) orelse true;
 
     config.emit_webdata = b.option(
@@ -522,6 +494,48 @@ pub fn init(b: *std.Build, appVersion: []const u8, libVersion: []const u8) !Conf
     return config;
 }
 
+/// Parse a release tag while allowing this fork to carry semantic build
+/// metadata such as `v1.3.2+ghostty2.1`.
+fn releaseVersionFromTag(
+    app_version: std.SemanticVersion,
+    tag: []const u8,
+) !std.SemanticVersion {
+    if (tag.len < 2 or tag[0] != 'v') return error.InvalidReleaseTag;
+
+    const version = std.SemanticVersion.parse(tag[1..]) catch
+        return error.InvalidReleaseTag;
+    if (version.major != app_version.major or
+        version.minor != app_version.minor or
+        version.patch != app_version.patch)
+    {
+        return error.ReleaseVersionMismatch;
+    }
+
+    return version;
+}
+
+test "release tags allow Ghostty2 build metadata" {
+    const app_version = try std.SemanticVersion.parse("1.3.2-dev");
+    const version = try releaseVersionFromTag(
+        app_version,
+        "v1.3.2+ghostty2.1",
+    );
+
+    try std.testing.expectEqual(app_version.major, version.major);
+    try std.testing.expectEqual(app_version.minor, version.minor);
+    try std.testing.expectEqual(app_version.patch, version.patch);
+    try std.testing.expect(version.pre == null);
+    try std.testing.expectEqualStrings("ghostty2.1", version.build.?);
+    try std.testing.expectError(
+        error.ReleaseVersionMismatch,
+        releaseVersionFromTag(app_version, "v1.3.3+ghostty2.1"),
+    );
+    try std.testing.expectError(
+        error.InvalidReleaseTag,
+        releaseVersionFromTag(app_version, "release-1.3.2"),
+    );
+}
+
 /// Configure the build options with our values.
 pub fn addOptions(self: *const Config, step: *std.Build.Step.Options) !void {
     // We need to break these down individual because addOption doesn't
@@ -530,7 +544,6 @@ pub fn addOptions(self: *const Config, step: *std.Build.Step.Options) !void {
     step.addOption(bool, "snap", self.snap);
     step.addOption(bool, "x11", self.x11);
     step.addOption(bool, "wayland", self.wayland);
-    step.addOption(bool, "sentry", self.sentry);
     step.addOption(bool, "simd", self.simd);
     step.addOption(bool, "i18n", self.i18n);
     step.addOption(ApprtRuntime, "app_runtime", self.app_runtime);

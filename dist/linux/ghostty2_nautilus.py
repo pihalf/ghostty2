@@ -27,7 +27,7 @@ _ = gettext.translation(DOMAIN, locale_dir, fallback=True).gettext
 
 def open_in_ghostty_activated(_menu, paths):
     for path in paths:
-        cmd = ['ghostty', f'--working-directory={path}', '--gtk-single-instance=false']
+        cmd = ['ghostty2', f'--working-directory={path}', '--gtk-single-instance=false']
         Gio.Subprocess.new(cmd, Gio.SubprocessFlags.NONE)
 
 
@@ -50,8 +50,8 @@ def get_paths_to_open(files):
 def get_items_for_files(name, files):
     paths = get_paths_to_open(files)
     if paths:
-        item = Nautilus.MenuItem(name=name, label=_('Open in Ghostty'),
-            icon='com.mitchellh.ghostty')
+        item = Nautilus.MenuItem(name=name, label=_('Open in Ghostty²'),
+            icon='io.github.pihalf.ghostty2')
         item.connect('activate', open_in_ghostty_activated, paths)
         return [item]
     else:

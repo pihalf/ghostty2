@@ -31,13 +31,13 @@ precedence over the XDG environment locations.
 
 # BUGS
 
-See GitHub issues: <https://github.com/ghostty-org/ghostty/issues>
+See GitHub issues: <https://github.com/pihalf/ghostty2/issues>
 
 # AUTHOR
 
 Mitchell Hashimoto <m@mitchellh.com>
-Ghostty contributors <https://github.com/ghostty-org/ghostty/graphs/contributors>
+Ghostty² contributors <https://github.com/pihalf/ghostty2/graphs/contributors>
 
 # SEE ALSO
 
-**ghostty(1)**
+**ghostty2(1)**

@@ -119,7 +119,7 @@ pub fn init(b: *std.Build, cfg: *const Config, deps: *const SharedDeps) !Ghostty
         const install_step = b.addInstallDirectory(.{
             .source_dir = b.path("src/shell-integration"),
             .install_dir = .{ .custom = "share" },
-            .install_subdir = b.pathJoin(&.{ "ghostty", "shell-integration" }),
+            .install_subdir = b.pathJoin(&.{ "ghostty2", "shell-integration" }),
             .exclude_extensions = &.{".md"},
         });
         try steps.append(b.allocator, &install_step.step);
@@ -131,7 +131,7 @@ pub fn init(b: *std.Build, cfg: *const Config, deps: *const SharedDeps) !Ghostty
             const install_step = b.addInstallDirectory(.{
                 .source_dir = upstream.path(""),
                 .install_dir = .{ .custom = "share" },
-                .install_subdir = b.pathJoin(&.{ "ghostty", "themes" }),
+                .install_subdir = b.pathJoin(&.{ "ghostty2", "themes" }),
                 .exclude_extensions = &.{".md"},
             });
             try steps.append(b.allocator, &install_step.step);
@@ -143,7 +143,7 @@ pub fn init(b: *std.Build, cfg: *const Config, deps: *const SharedDeps) !Ghostty
         const run = b.addRunArtifact(build_data_exe);
         run.addArg("+fish");
         const wf = b.addWriteFiles();
-        _ = wf.addCopyFile(run.captureStdOut(), "ghostty.fish");
+        _ = wf.addCopyFile(run.captureStdOut(), "ghostty2.fish");
 
         const install_step = b.addInstallDirectory(.{
             .source_dir = wf.getDirectory(),
@@ -158,7 +158,7 @@ pub fn init(b: *std.Build, cfg: *const Config, deps: *const SharedDeps) !Ghostty
         const run = b.addRunArtifact(build_data_exe);
         run.addArg("+zsh");
         const wf = b.addWriteFiles();
-        _ = wf.addCopyFile(run.captureStdOut(), "_ghostty");
+        _ = wf.addCopyFile(run.captureStdOut(), "_ghostty2");
 
         const install_step = b.addInstallDirectory(.{
             .source_dir = wf.getDirectory(),
@@ -173,7 +173,7 @@ pub fn init(b: *std.Build, cfg: *const Config, deps: *const SharedDeps) !Ghostty
         const run = b.addRunArtifact(build_data_exe);
         run.addArg("+bash");
         const wf = b.addWriteFiles();
-        _ = wf.addCopyFile(run.captureStdOut(), "ghostty.bash");
+        _ = wf.addCopyFile(run.captureStdOut(), "ghostty2.bash");
 
         const install_step = b.addInstallDirectory(.{
             .source_dir = wf.getDirectory(),
@@ -265,22 +265,21 @@ fn addLinuxAppResources(
     // Background:
     // https://developer.gnome.org/documentation/guidelines/maintainer/integrating.html
 
-    const name = b.fmt("Ghostty{s}", .{
+    const name = b.fmt("Ghostty²{s}", .{
         switch (cfg.optimize) {
             .Debug, .ReleaseSafe => " (Debug)",
             .ReleaseFast, .ReleaseSmall => "",
         },
     });
 
-    const app_id = b.fmt("com.mitchellh.ghostty{s}", .{
-        switch (cfg.optimize) {
-            .Debug, .ReleaseSafe => "-debug",
-            .ReleaseFast, .ReleaseSmall => "",
-        },
-    });
+    const base_app_id = "io.github.pihalf.ghostty2";
+    const app_id = b.fmt("{s}{s}", .{ base_app_id, switch (cfg.optimize) {
+        .Debug, .ReleaseSafe => "-debug",
+        .ReleaseFast, .ReleaseSmall => "",
+    } });
 
     const exe_abs_path = b.fmt(
-        "{s}/bin/ghostty",
+        "{s}/bin/ghostty2",
         .{b.install_prefix},
     );
 
@@ -338,7 +337,7 @@ fn addLinuxAppResources(
         // AppStream metainfo so that application has rich metadata
         // within app stores
         try ts.append(b.allocator, .{
-            b.path("dist/linux/com.mitchellh.ghostty.metainfo.xml.in"),
+            b.path("dist/linux/io.github.pihalf.ghostty2.metainfo.xml.in"),
             b.fmt("share/metainfo/{s}.metainfo.xml", .{app_id}),
         });
 
@@ -353,6 +352,7 @@ fn addLinuxAppResources(
             .NAME = name,
             .APPID = app_id,
             .GHOSTTY = exe_abs_path,
+            .ICON = base_app_id,
         });
 
         // Template output has a single header line we want to remove.
@@ -370,62 +370,62 @@ fn addLinuxAppResources(
 
     // Right click menu action for Plasma desktop
     try steps.append(b.allocator, &b.addInstallFile(
-        b.path("dist/linux/ghostty_dolphin.desktop"),
-        "share/kio/servicemenus/com.mitchellh.ghostty.desktop",
+        b.path("dist/linux/ghostty2_dolphin.desktop"),
+        "share/kio/servicemenus/io.github.pihalf.ghostty2.desktop",
     ).step);
 
-    // Right click menu action for Nautilus. Note that this _must_ be named
-    // `ghostty.py`. Using the full app id causes problems (see #5468).
+    // Right click menu action for Nautilus. Keep this short rather than using
+    // the full app ID because full IDs cause problems (see #5468).
     try steps.append(b.allocator, &b.addInstallFile(
-        b.path("dist/linux/ghostty_nautilus.py"),
-        "share/nautilus-python/extensions/ghostty.py",
+        b.path("dist/linux/ghostty2_nautilus.py"),
+        "share/nautilus-python/extensions/ghostty2.py",
     ).step);
 
     // Various icons that our application can use, including the icon
     // that will be used for the desktop.
     try steps.append(b.allocator, &b.addInstallFile(
         b.path("images/gnome/16.png"),
-        "share/icons/hicolor/16x16/apps/com.mitchellh.ghostty.png",
+        "share/icons/hicolor/16x16/apps/io.github.pihalf.ghostty2.png",
     ).step);
     try steps.append(b.allocator, &b.addInstallFile(
         b.path("images/gnome/32.png"),
-        "share/icons/hicolor/32x32/apps/com.mitchellh.ghostty.png",
+        "share/icons/hicolor/32x32/apps/io.github.pihalf.ghostty2.png",
     ).step);
     try steps.append(b.allocator, &b.addInstallFile(
         b.path("images/gnome/128.png"),
-        "share/icons/hicolor/128x128/apps/com.mitchellh.ghostty.png",
+        "share/icons/hicolor/128x128/apps/io.github.pihalf.ghostty2.png",
     ).step);
     try steps.append(b.allocator, &b.addInstallFile(
         b.path("images/gnome/256.png"),
-        "share/icons/hicolor/256x256/apps/com.mitchellh.ghostty.png",
+        "share/icons/hicolor/256x256/apps/io.github.pihalf.ghostty2.png",
     ).step);
     try steps.append(b.allocator, &b.addInstallFile(
         b.path("images/gnome/512.png"),
-        "share/icons/hicolor/512x512/apps/com.mitchellh.ghostty.png",
+        "share/icons/hicolor/512x512/apps/io.github.pihalf.ghostty2.png",
     ).step);
     // Flatpaks only support icons up to 512x512.
     if (!cfg.flatpak) {
         try steps.append(b.allocator, &b.addInstallFile(
             b.path("images/gnome/1024.png"),
-            "share/icons/hicolor/1024x1024/apps/com.mitchellh.ghostty.png",
+            "share/icons/hicolor/1024x1024/apps/io.github.pihalf.ghostty2.png",
         ).step);
     }
 
     try steps.append(b.allocator, &b.addInstallFile(
         b.path("images/gnome/32.png"),
-        "share/icons/hicolor/16x16@2/apps/com.mitchellh.ghostty.png",
+        "share/icons/hicolor/16x16@2/apps/io.github.pihalf.ghostty2.png",
     ).step);
     try steps.append(b.allocator, &b.addInstallFile(
         b.path("images/gnome/64.png"),
-        "share/icons/hicolor/32x32@2/apps/com.mitchellh.ghostty.png",
+        "share/icons/hicolor/32x32@2/apps/io.github.pihalf.ghostty2.png",
     ).step);
     try steps.append(b.allocator, &b.addInstallFile(
         b.path("images/gnome/256.png"),
-        "share/icons/hicolor/128x128@2/apps/com.mitchellh.ghostty.png",
+        "share/icons/hicolor/128x128@2/apps/io.github.pihalf.ghostty2.png",
     ).step);
     try steps.append(b.allocator, &b.addInstallFile(
         b.path("images/gnome/512.png"),
-        "share/icons/hicolor/256x256@2/apps/com.mitchellh.ghostty.png",
+        "share/icons/hicolor/256x256@2/apps/io.github.pihalf.ghostty2.png",
     ).step);
 }
 

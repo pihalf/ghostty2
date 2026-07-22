@@ -87,10 +87,10 @@ const ThemeListElement = struct {
 /// The second directory is the `themes` subdirectory of the Ghostty resources
 /// directory. Ghostty ships with a multitude of themes that will be installed
 /// into this directory. On macOS, this directory is the
-/// `Ghostty.app/Contents/Resources/ghostty/themes`. On Linux, this directory
-/// is the `share/ghostty/themes` (wherever you installed the Ghostty "share"
+/// `Ghostty2.app/Contents/Resources/ghostty2/themes`. On Linux, this directory
+/// is the `share/ghostty2/themes` (wherever you installed the Ghostty² "share"
 /// directory). If you're running Ghostty from the source, this is the
-/// `zig-out/share/ghostty/themes` directory.
+/// `zig-out/share/ghostty2/themes` directory.
 ///
 /// You can also set the `GHOSTTY_RESOURCES_DIR` environment variable to point
 /// to the resources directory.
@@ -127,8 +127,8 @@ pub fn run(gpa_alloc: std.mem.Allocator) !u8 {
 
     const resources_dir = global_state.resources_dir.app();
     if (resources_dir == null)
-        try stderr.print("Could not find the Ghostty resources directory. Please ensure " ++
-            "that Ghostty is installed correctly.\n", .{});
+        try stderr.print("Could not find the Ghostty² resources directory. Please ensure " ++
+            "that Ghostty² is installed correctly.\n", .{});
 
     var count: usize = 0;
 
@@ -834,18 +834,18 @@ const Preview = struct {
                 child.fill(.{ .style = self.ui_standard() });
 
                 const save_instructions = [_][]const u8{
-                    "To apply this theme, add the following line to your Ghostty configuration:",
+                    "To apply this theme, add the following line to your Ghostty² configuration:",
                     "",
                     try std.fmt.allocPrint(alloc, "theme = {s}", .{theme.theme}),
                     "",
                     "Save the configuration file and then reload it to apply the new theme.",
                     "",
                     "Or press 'w' to write an auto theme file to your system's preferred default config path.",
-                    "Then add the following line to your Ghostty configuration and reload:",
+                    "Then add the following line to your Ghostty² configuration and reload:",
                     "",
                     "config-file = ?auto/theme.ghostty",
                     "",
-                    "For more details on configuration and themes, visit the Ghostty documentation:",
+                    "For more details on configuration and themes, visit the Ghostty² documentation:",
                     "",
                     "https://ghostty.org/docs/config/reference",
                 };

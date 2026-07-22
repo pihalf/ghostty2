@@ -1754,7 +1754,7 @@ pub const Surface = extern struct {
         };
 
         const t = switch (title.len) {
-            0 => "Ghostty",
+            0 => "Ghostty²",
             else => title,
         };
 
@@ -1762,7 +1762,7 @@ pub const Surface = extern struct {
         defer notification.unref();
         notification.setBody(body);
 
-        const icon = gio.ThemedIcon.new("com.mitchellh.ghostty");
+        const icon = gio.ThemedIcon.new(@import("../build/info.zig").base_application_id);
         defer icon.unref();
         notification.setIcon(icon.as(gio.Icon));
 

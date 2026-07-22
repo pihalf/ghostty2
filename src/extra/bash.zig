@@ -38,7 +38,7 @@ fn writeBashCompletions(writer: *std.Io.Writer) !void {
     const pad5 = pad4 ++ pad1;
 
     try writer.writeAll(
-        \\_ghostty() {
+        \\_ghostty2() {
         \\
         \\  # compat: mapfile -t COMPREPLY < <( "$@" )
         \\  _compreply() {
@@ -331,7 +331,7 @@ fn writeBashCompletions(writer: *std.Io.Writer) !void {
         \\  return 0
         \\}
         \\
-        \\complete -o nospace -o bashdefault -F _ghostty ghostty
+        \\complete -o nospace -o bashdefault -F _ghostty2 ghostty2
         \\
     );
 }

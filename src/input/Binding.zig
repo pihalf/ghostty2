@@ -591,7 +591,7 @@ pub const Action = union(enum) {
     ///
     /// This is only supported on Linux and when the system's libadwaita
     /// version is 1.4 or newer. The current libadwaita version can be
-    /// found by running `ghostty +version`.
+    /// found by running `ghostty2 +version`.
     toggle_tab_overview,
 
     /// Change the title of the current focused surface via a pop-up prompt.
@@ -790,7 +790,7 @@ pub const Action = union(enum) {
     /// to filter the actions, and the ability to then execute the action.
     ///
     /// This requires libadwaita 1.5 or newer on Linux. The current libadwaita
-    /// version can be found by running `ghostty +version`.
+    /// version can be found by running `ghostty2 +version`.
     toggle_command_palette,
 
     /// Toggle the quick terminal.
@@ -950,9 +950,7 @@ pub const Action = union(enum) {
     ///
     /// WARNING: This is a hard crash (panic) and data can be lost.
     ///
-    /// The purpose of this action is to test crash handling. For some
-    /// users, it may be useful to test crash reporting functionality in
-    /// order to determine if it all works as expected.
+    /// The purpose of this action is to test crash handling in released builds.
     ///
     /// The value determines the crash location:
     ///

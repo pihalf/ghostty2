@@ -15,7 +15,7 @@ pub fn genConfig(writer: *std.Io.Writer) !void {
         \\---
         \\title: Reference
         \\description: Reference of all Ghostty configuration options.
-        \\editOnGithubLink: https://github.com/ghostty-org/ghostty/edit/main/src/config/Config.zig
+        \\editOnGithubLink: https://github.com/pihalf/ghostty2/edit/main/src/config/Config.zig
         \\---
         \\
         \\This is a reference of all Ghostty configuration options. These

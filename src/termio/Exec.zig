@@ -13,7 +13,6 @@ const xev = @import("../global.zig").xev;
 const apprt = @import("../apprt.zig");
 const build_config = @import("../build_config.zig");
 const configpkg = @import("../config.zig");
-const crash = @import("../crash/main.zig");
 const fastmem = @import("../fastmem.zig");
 const internal_os = @import("../os/main.zig");
 const renderer = @import("../renderer.zig");
@@ -1395,13 +1394,6 @@ pub const ReadThread = struct {
             setQosClass();
         }
 
-        // Setup our crash metadata
-        crash.sentry.thread_state = .{
-            .type = .io,
-            .surface = io.surface_mailbox.surface,
-        };
-        defer crash.sentry.thread_state = null;
-
         // Set the fd to non-blocking so the gather stage can drain it
         // in a tight loop and fall back to poll for readiness. The
         // pipeline can't run with a blocking fd (a blocking read
@@ -1754,13 +1746,6 @@ pub const ReadThread = struct {
     fn threadMainWindows(fd: posix.fd_t, io: *termio.Termio, quit: posix.fd_t) void {
         // Always close our end of the pipe when we exit.
         defer posix.close(quit);
-
-        // Setup our crash metadata
-        crash.sentry.thread_state = .{
-            .type = .io,
-            .surface = io.surface_mailbox.surface,
-        };
-        defer crash.sentry.thread_state = null;
 
         var buf: [1024]u8 = undefined;
         while (true) {

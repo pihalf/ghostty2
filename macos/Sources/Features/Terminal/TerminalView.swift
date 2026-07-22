@@ -33,8 +33,6 @@ protocol TerminalViewModel: ObservableObject {
     /// The command palette state.
     var commandPaletteIsShowing: Bool { get set }
 
-    /// The update overlay should be visible.
-    var updateOverlayIsVisible: Bool { get }
 }
 
 /// The main terminal view. This terminal view supports splits.
@@ -111,35 +109,12 @@ struct TerminalView<ViewModel: TerminalViewModel>: View {
                     TerminalCommandPaletteView(
                         surfaceView: surfaceView,
                         isPresented: $viewModel.commandPaletteIsShowing,
-                        ghosttyConfig: ghostty.config,
-                        updateViewModel: (NSApp.delegate as? AppDelegate)?.updateViewModel) { action in
+                        ghosttyConfig: ghostty.config) { action in
                         self.delegate?.performAction(action, on: surfaceView)
                     }
                 }
-
-                // Show update information above all else.
-                if viewModel.updateOverlayIsVisible {
-                    UpdateOverlay()
-                }
             }
             .frame(maxWidth: .greatestFiniteMagnitude, maxHeight: .greatestFiniteMagnitude)
-        }
-    }
-}
-
-private struct UpdateOverlay: View {
-    var body: some View {
-        if let appDelegate = NSApp.delegate as? AppDelegate {
-            VStack {
-                Spacer()
-
-                HStack {
-                    Spacer()
-                    UpdatePill(model: appDelegate.updateViewModel)
-                        .padding(.bottom, 9)
-                        .padding(.trailing, 9)
-                }
-            }
         }
     }
 }
@@ -154,7 +129,7 @@ struct DebugBuildWarningView: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundColor(.yellow)
 
-            Text("You're running a debug build of Ghostty! Performance will be degraded.")
+            Text("You're running a debug build of Ghostty²! Performance will be degraded.")
                 .padding(.all, 8)
                 .popover(isPresented: $isPopover, arrowEdge: .bottom) {
                     Text("""
@@ -171,7 +146,7 @@ struct DebugBuildWarningView: View {
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Debug build warning")
-        .accessibilityValue("Debug builds of Ghostty are very slow and you may experience performance problems. Debug builds are only recommended during development.")
+        .accessibilityValue("Debug builds of Ghostty² are very slow and you may experience performance problems. Debug builds are only recommended during development.")
         .accessibilityAddTraits(.isStaticText)
         .onTapGesture {
             isPopover = true

@@ -158,7 +158,7 @@ fn createUpdateStep(b: *std.Build) !*std.Build.Step {
     xgettext_py.addArg("-o");
     const py_pot = xgettext_py.addOutputFileArg("py.pot");
 
-    const nautilus_script_path = "dist/linux/ghostty_nautilus.py";
+    const nautilus_script_path = "dist/linux/ghostty2_nautilus.py";
     xgettext_py.addArg(nautilus_script_path);
     xgettext_py.addFileInput(b.path(nautilus_script_path));
 

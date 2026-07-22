@@ -1,9 +1,9 @@
-app-id: com.mitchellh.ghostty
+app-id: io.github.pihalf.ghostty2
 runtime: org.gnome.Platform
 runtime-version: "50"
 sdk: org.gnome.Sdk
-default-branch: tip
-command: ghostty
+default-branch: stable
+command: ghostty2
 finish-args:
   # 3D rendering
   - --device=dri

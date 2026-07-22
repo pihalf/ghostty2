@@ -54,7 +54,7 @@ EXTRACT_LOCAL_CLASSES  = NO
 #---------------------------------------------------------------------------
 
 GENERATE_HTML          = YES
-HTML_OUTPUT            = zig-out/share/ghostty/doc/libghostty
+HTML_OUTPUT            = zig-out/share/ghostty2/doc/libghostty
 HTML_EXTRA_STYLESHEET  = dist/doxygen/ghostty.css
 HTML_EXTRA_FILES       = dist/doxygen/favicon.png \
                          dist/doxygen/mobile-nav.js

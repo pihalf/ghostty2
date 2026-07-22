@@ -22,7 +22,6 @@ const Allocator = std.mem.Allocator;
 const ArenaAllocator = std.heap.ArenaAllocator;
 const global_state = &@import("global.zig").state;
 const oni = @import("oniguruma");
-const crash = @import("crash/main.zig");
 const unicode = @import("unicode/main.zig");
 const rendererpkg = @import("renderer.zig");
 const termio = @import("termio.zig");
@@ -1342,7 +1341,7 @@ fn childExitedAbnormally(
     // Output our error message
     try t.setAttribute(.{ .@"8_fg" = .bright_red });
     try t.setAttribute(.{ .bold = {} });
-    try t.printString("Ghostty failed to launch the requested command:");
+    try t.printString("Ghostty² failed to launch the requested command:");
     try t.setAttribute(.{ .unset = {} });
 
     t.carriageReturn();
@@ -2465,10 +2464,6 @@ fn queueRender(self: *Surface) !void {
 }
 
 pub fn sizeCallback(self: *Surface, size: apprt.SurfaceSize) !void {
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
-
     const new_screen_size: rendererpkg.ScreenSize = .{
         .width = size.width,
         .height = size.height,
@@ -2525,10 +2520,6 @@ fn balancePaddingIfNeeded(self: *Surface) void {
 /// The preedit input must be UTF-8 encoded.
 pub fn preeditCallback(self: *Surface, preedit_: ?[]const u8) !void {
     // log.debug("text preeditCallback value={any}", .{preedit_});
-
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
 
     self.renderer_state.mutex.lock();
     defer self.renderer_state.mutex.unlock();
@@ -2658,10 +2649,6 @@ pub fn keyCallback(
     if (self.config.key_remaps.isRemapped(event_orig.mods)) {
         event.mods = self.config.key_remaps.apply(event_orig.mods);
     }
-
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
 
     // Setup our inspector event if we have an inspector.
     var insp_ev: ?inspectorpkg.KeyEvent = if (self.inspector != null) ev: {
@@ -3280,10 +3267,6 @@ fn encodeKeyOpts(self: *const Surface) input.key_encode.Options {
 /// if bracketed mode is on this will do a bracketed paste. Otherwise,
 /// this will filter newlines to '\r'.
 pub fn textCallback(self: *Surface, text: []const u8) !void {
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
-
     try self.completeClipboardPaste(text, true);
 }
 
@@ -3291,10 +3274,6 @@ pub fn textCallback(self: *Surface, text: []const u8) !void {
 /// of focus state. This is used to pause rendering when the surface
 /// is not visible, and also re-render when it becomes visible again.
 pub fn occlusionCallback(self: *Surface, visible: bool) !void {
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
-
     _ = self.renderer_thread.mailbox.push(.{
         .visible = visible,
     }, .{ .forever = {} });
@@ -3302,10 +3281,6 @@ pub fn occlusionCallback(self: *Surface, visible: bool) !void {
 }
 
 pub fn focusCallback(self: *Surface, focused: bool) !void {
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
-
     // Always update the app focused surface, otherwise we miss
     // the first surface created.
     if (focused) self.app.focusSurface(self);
@@ -3390,10 +3365,6 @@ pub fn focusCallback(self: *Surface, focused: bool) !void {
 }
 
 pub fn refreshCallback(self: *Surface) !void {
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
-
     // The point of this callback is to schedule a render, so do that.
     try self.queueRender();
 }
@@ -3426,10 +3397,6 @@ pub fn scrollCallback(
     scroll_mods: input.ScrollMods,
 ) !void {
     // log.info("SCROLL: xoff={} yoff={} mods={}", .{ xoff, yoff, scroll_mods });
-
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
 
     // Always show the mouse again if it is hidden
     if (self.mouse.hidden) self.showMouse();
@@ -3601,10 +3568,6 @@ pub fn scrollCallback(
 /// This is called when the content scale of the surface changes. The surface
 /// can then update any DPI-sensitive state.
 pub fn contentScaleCallback(self: *Surface, content_scale: apprt.ContentScale) !void {
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
-
     // Calculate the new DPI
     const x_dpi = content_scale.x * font.face.default_dpi;
     const y_dpi = content_scale.y * font.face.default_dpi;
@@ -3753,10 +3716,6 @@ pub fn mouseButtonCallback(
     button: input.MouseButton,
     mods: input.Mods,
 ) !bool {
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
-
     // log.debug("mouse action={} button={} mods={}", .{ action, button, mods });
 
     // If we have an inspector, we always queue a render
@@ -4450,10 +4409,6 @@ pub fn mousePressureCallback(
     stage: input.MousePressureStage,
     pressure: f64,
 ) !void {
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
-
     // We don't currently use the pressure value for anything. In the
     // future, we could report this to applications using new mouse
     // events or utilize it for some custom UI.
@@ -4514,10 +4469,6 @@ pub fn cursorPosCallback(
     pos: apprt.CursorPos,
     mods: ?input.Mods,
 ) !void {
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
-
     // log.debug("cursor pos x={} y={} mods={?}", .{ pos.x, pos.y, mods });
 
     // If the position is negative, it is outside our viewport and
@@ -4703,10 +4654,6 @@ pub fn cursorPosCallback(
 /// Call to notify Ghostty that the color scheme for the terminal has
 /// changed.
 pub fn colorSchemeCallback(self: *Surface, scheme: apprt.ColorScheme) !void {
-    // Crash metadata in case we crash in here
-    crash.sentry.thread_state = self.crashThreadState();
-    defer crash.sentry.thread_state = null;
-
     const new_scheme: configpkg.ConditionalState.Theme = switch (scheme) {
         .light => .light,
         .dark => .dark,
@@ -6009,13 +5956,6 @@ fn showDesktopNotification(self: *Surface, title: [:0]const u8, body: [:0]const 
             .body = body,
         },
     );
-}
-
-fn crashThreadState(self: *Surface) crash.sentry.ThreadState {
-    return .{
-        .type = .main,
-        .surface = self,
-    };
 }
 
 /// Tell the surface to present itself to the user. This may involve raising the

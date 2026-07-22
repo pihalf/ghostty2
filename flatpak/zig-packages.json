@@ -7,12 +7,6 @@
   },
   {
     "type": "archive",
-    "url": "https://deps.files.ghostty.org/breakpad-b99f444ba5f6b98cac261cbb391d8766b34a5918.tar.gz",
-    "dest": "vendor/p/N-V-__8AALw2uwF_03u4JRkZwRLc3Y9hakkYV7NKRR9-RIZJ",
-    "sha256": "6cca98943d1a990766cef61077c09aff5938063fe17a1efe1228e5412b6d6ad9"
-  },
-  {
-    "type": "archive",
     "url": "https://deps.files.ghostty.org/fontconfig-2.14.2.tar.gz",
     "dest": "vendor/p/N-V-__8AAIrfdwARSa-zMmxWwFuwpXf1T3asIN7s5jqi9c1v",
     "sha256": "3ba2dd92158718acec5caaf1a716043b5aa055c27b081d914af3ccb40dce8a55"
@@ -118,12 +112,6 @@
     "url": "https://deps.files.ghostty.org/plasma_wayland_protocols-12207e0851c12acdeee0991e893e0132fc87bb763969a585dc16ecca33e88334c566.tar.gz",
     "dest": "vendor/p/N-V-__8AAKYZBAB-CFHBKs3u4JkeiT4BMvyHu3Y5aaWF3Bbs",
     "sha256": "5c58ba214acd8e6bca3426dc08b022c46a8dd997b29a1b3e28badf71c20df441"
-  },
-  {
-    "type": "archive",
-    "url": "https://deps.files.ghostty.org/sentry-1220446be831adcca918167647c06c7b825849fa3fba5f22da394667974537a9c77e.tar.gz",
-    "dest": "vendor/p/N-V-__8AAPlZGwBEa-gxrcypGBZ2R8Bse4JYSfo_ul8i2jlG",
-    "sha256": "2ac6497cc8d61a8d31093e47addb8c9b2c45b16b0705bb334a835b6423c318df"
   },
   {
     "type": "archive",

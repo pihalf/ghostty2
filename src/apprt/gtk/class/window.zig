@@ -323,7 +323,7 @@ pub const Window = extern struct {
 
         // Set our window icon. We can't set this in the blueprint file
         // because its dependent on the build config.
-        self.as(gtk.Window).setIconName(build_config.bundle_id);
+        self.as(gtk.Window).setIconName(@import("../build/info.zig").base_application_id);
 
         // Initialize our actions
         self.initActionMap();
@@ -1834,9 +1834,9 @@ pub const Window = extern struct {
         _: ?*glib.Variant,
         self: *Self,
     ) callconv(.c) void {
-        const name = "Ghostty";
-        const icon = "com.mitchellh.ghostty";
-        const website = "https://ghostty.org";
+        const name = "Ghostty²";
+        const icon = @import("../build/info.zig").base_application_id;
+        const website = "https://github.com/pihalf/ghostty2";
 
         if (adw_version.supportsDialogs()) {
             adw.showAboutDialog(
@@ -1844,13 +1844,13 @@ pub const Window = extern struct {
                 "application-name",
                 name,
                 "developer-name",
-                i18n._("Ghostty Developers"),
+                i18n._("Ghostty² Developers"),
                 "application-icon",
                 icon,
                 "version",
                 build_config.version_string.ptr,
                 "issue-url",
-                "https://github.com/ghostty-org/ghostty/issues",
+                "https://github.com/pihalf/ghostty2/issues",
                 "website",
                 website,
                 @as(?*anyopaque, null),
@@ -1863,7 +1863,7 @@ pub const Window = extern struct {
                 "logo-icon-name",
                 icon,
                 "title",
-                i18n._("About Ghostty"),
+                i18n._("About Ghostty²"),
                 "version",
                 build_config.version_string.ptr,
                 "website",

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>@APPID@</id>
+  <launchable type="desktop-id">@APPID@.desktop</launchable>
+  <name>@NAME@</name>
+  <url type="homepage">https://github.com/pihalf/ghostty2</url>
+  <url type="help">https://github.com/pihalf/ghostty2#readme</url>
+  <url type="bugtracker">https://github.com/pihalf/ghostty2/issues</url>
+  <url type="contact">https://github.com/pihalf/ghostty2/issues</url>
+  <url type="contribute">https://github.com/pihalf/ghostty2/blob/main/CONTRIBUTING.md</url>
+  <url type="translate">https://github.com/pihalf/ghostty2/blob/main/po/README_TRANSLATORS.md</url>
+  <url type="vcs-browser">https://github.com/pihalf/ghostty2</url>
+  <summary>Ghostty² is a fast, feature-rich, and cross-platform terminal emulator</summary>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <content_rating type="oars-1.1" />
+  <developer id="io.github.pihalf">
+    <name>Ghostty² contributors</name>
+  </developer>
+  <description>
+    <p>
+      Ghostty² is a terminal emulator that differentiates itself by being fast,
+      feature-rich, and native. While there are many excellent terminal
+      emulators available, they all force you to choose between speed,
+      features, or native UIs. Ghostty² provides all three.
+    </p>
+  </description>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <requires>
+    <!--
+      Mobile/tablet AND desktop supported
+
+      Ref: https://docs.flathub.org/docs/for-app-authors/metainfo-guidelines#display-size
+    -->
+    <display_length compare="ge">360</display_length>
+  </requires>
+  <translation type="gettext">com.mitchellh.ghostty</translation>
+
+  <!--
+    TODO: Generate manifest location data.
+
+    Ref: https://docs.flathub.org/docs/for-app-authors/metainfo-guidelines#manifest-location
+
+  <custom>
+    <value key="flathub::manifest">https://github.com/pihalf/ghostty2/blob/<hash>/flatpak/io.github.pihalf.ghostty2.yml</value>
+  </custom>
+  -->
+</component>

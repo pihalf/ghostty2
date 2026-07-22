@@ -18,7 +18,7 @@ pub fn genActions(writer: *std.Io.Writer) !void {
         \\---
         \\title: Reference
         \\description: Reference of all Ghostty action subcommands.
-        \\editOnGithubLink: https://github.com/ghostty-org/ghostty/tree/main/src/cli
+        \\editOnGithubLink: https://github.com/pihalf/ghostty2/tree/main/src/cli
         \\---
         \\Ghostty includes a number of utility actions that can be accessed as subcommands.
         \\Actions provide utilities to work with config, list keybinds, list fonts, demo themes,
@@ -44,8 +44,8 @@ pub fn genActions(writer: *std.Io.Writer) !void {
             }
             try writer.writeAll("\n```\n");
             switch (action) {
-                .help, .version => try writer.writeAll("ghostty --" ++ field.name ++ "\n"),
-                else => try writer.writeAll("ghostty +" ++ field.name ++ "\n"),
+                .help, .version => try writer.writeAll("ghostty2 --" ++ field.name ++ "\n"),
+                else => try writer.writeAll("ghostty2 +" ++ field.name ++ "\n"),
             }
             try writer.writeAll("```\n\n");
         }

@@ -1,10 +1,10 @@
-app-id: com.mitchellh.ghostty-debug
+app-id: io.github.pihalf.ghostty2-debug
 runtime: org.gnome.Platform
 runtime-version: "50"
 sdk: org.gnome.Sdk
 default-branch: tip
-command: ghostty
-rename-icon: com.mitchellh.ghostty
+command: ghostty2
+rename-icon: io.github.pihalf.ghostty2
 finish-args:
   # 3D rendering
   - --device=dri

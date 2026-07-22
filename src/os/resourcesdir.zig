@@ -43,7 +43,7 @@ pub fn resourcesDir(alloc: Allocator) !ResourcesDir {
     // In debug builds we try using terminfo detection first instead, since
     // if debug Ghostty is launched by an older version of Ghostty, it
     // would inherit the old, stale resources of older Ghostty instead of the
-    // freshly built ones under zig-out/share/ghostty.
+    // freshly built ones under zig-out/share/ghostty2.
     //
     // Note: we ALWAYS want to allocate here because the result is always
     // freed, do not try to use internal_os.getenv or posix getenv.
@@ -79,7 +79,7 @@ pub fn resourcesDir(alloc: Allocator) !ResourcesDir {
         if (comptime builtin.target.os.tag.isDarwin()) {
             inline for (sentinels) |sentinel| {
                 if (try maybeDir(&dir_buf, dir, "Contents/Resources", sentinel)) |v| {
-                    return .{ .app_path = try std.fs.path.join(alloc, &.{ v, "ghostty" }) };
+                    return .{ .app_path = try std.fs.path.join(alloc, &.{ v, "ghostty2" }) };
                 }
             }
         }
@@ -94,7 +94,7 @@ pub fn resourcesDir(alloc: Allocator) !ResourcesDir {
                 if (builtin.target.os.tag == .freebsd) "local/share" else "share",
                 sentinel,
             )) |v| {
-                return .{ .app_path = try std.fs.path.join(alloc, &.{ v, "ghostty" }) };
+                return .{ .app_path = try std.fs.path.join(alloc, &.{ v, "ghostty2" }) };
             }
         }
     }

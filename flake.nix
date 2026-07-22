@@ -115,12 +115,18 @@
         )
         (
           forBuildablePlatforms (pkgs: rec {
-            ghostty-debug = pkgs.callPackage ./nix/package.nix (mkPkgArgs "Debug");
-            ghostty-releasesafe = pkgs.callPackage ./nix/package.nix (mkPkgArgs "ReleaseSafe");
-            ghostty-releasefast = pkgs.callPackage ./nix/package.nix (mkPkgArgs "ReleaseFast");
+            ghostty2-debug = pkgs.callPackage ./nix/package.nix (mkPkgArgs "Debug");
+            ghostty2-releasesafe = pkgs.callPackage ./nix/package.nix (mkPkgArgs "ReleaseSafe");
+            ghostty2-releasefast = pkgs.callPackage ./nix/package.nix (mkPkgArgs "ReleaseFast");
 
-            ghostty = ghostty-releasefast;
-            default = ghostty;
+            ghostty2 = ghostty2-releasefast;
+            default = ghostty2;
+
+            # Compatibility aliases for existing local Nix configurations.
+            ghostty-debug = ghostty2-debug;
+            ghostty-releasesafe = ghostty2-releasesafe;
+            ghostty-releasefast = ghostty2-releasefast;
+            ghostty = ghostty2;
           })
         )
       ];
@@ -134,7 +140,7 @@
           inherit module nixpkgs;
           overlay = self.overlays.debug;
         };
-        program = pkgs.writeShellScript "run-ghostty-vm" ''
+        program = pkgs.writeShellScript "run-ghostty2-vm" ''
           SHARED_DIR=$(pwd)
           export SHARED_DIR
 
@@ -163,10 +169,12 @@
     overlays = {
       default = self.overlays.releasefast;
       releasefast = final: prev: {
-        ghostty = final.callPackage ./nix/package.nix (mkPkgArgs "ReleaseFast");
+        ghostty2 = final.callPackage ./nix/package.nix (mkPkgArgs "ReleaseFast");
+        ghostty = final.ghostty2;
       };
       debug = final: prev: {
-        ghostty = final.callPackage ./nix/package.nix (mkPkgArgs "Debug");
+        ghostty2 = final.callPackage ./nix/package.nix (mkPkgArgs "Debug");
+        ghostty = final.ghostty2;
       };
     };
   };

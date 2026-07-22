@@ -9,10 +9,6 @@ class TitlebarTabsTahoeTerminalWindow: TransparentTitlebarTerminalWindow, NSTool
     /// The view model for SwiftUI views
     private var viewModel = ViewModel()
 
-    /// Titlebar tabs can't support the update accessory because of the way we layout
-    /// the native tabs back into the menu bar.
-    override var supportsUpdateAccessory: Bool { false }
-
     deinit {
         tabBarObserver = nil
     }
@@ -273,7 +269,7 @@ class TitlebarTabsTahoeTerminalWindow: TransparentTitlebarTerminalWindow, NSTool
 
     class ViewModel: ObservableObject {
         @Published var titleFont: NSFont?
-        @Published var title: String = "👻 Ghostty"
+        @Published var title: String = "👻 Ghostty²"
         @Published var hasTabBar: Bool = false
         @Published var isMainWindow: Bool = true
     }

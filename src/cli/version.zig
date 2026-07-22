@@ -24,11 +24,11 @@ pub fn run(alloc: Allocator) !u8 {
 
     if (tty) if (build_config.version.build) |commit_hash| {
         try stdout.print(
-            "\x1b]8;;https://github.com/ghostty-org/ghostty/commit/{s}\x1b\\",
+            "\x1b]8;;https://github.com/pihalf/ghostty2/commit/{s}\x1b\\",
             .{commit_hash},
         );
     };
-    try stdout.print("Ghostty {s}\n\n", .{build_config.version_string});
+    try stdout.print("Ghostty² {s}\n\n", .{build_config.version_string});
     if (tty) try stdout.print("\x1b]8;;\x1b\\", .{});
 
     try stdout.print("Version\n", .{});

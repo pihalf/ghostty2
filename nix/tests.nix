@@ -147,13 +147,13 @@ in {
           extraGroups = ["wheel"];
           hashedPassword = "";
           packages = [
-            pkgs.ghostty
+            pkgs.ghostty2
           ];
         };
       };
     };
     testScript = {...}: ''
-      machine.succeed("su - ghostty -c 'ghostty +version'")
+      machine.succeed("su - ghostty -c 'ghostty2 +version'")
     '';
   };
 
@@ -174,7 +174,7 @@ in {
       bus_path = "/run/user/${toString user.uid}/bus";
       bus = "DBUS_SESSION_BUS_ADDRESS=unix:path=${bus_path}";
       gdbus = "${bus} gdbus";
-      ghostty = "${bus} ghostty";
+      ghostty = "${bus} ghostty2";
       su = command: "su - ${user.name} -c '${command}'";
       gseval = "call --session -d org.gnome.Shell -o /org/gnome/Shell -m org.gnome.Shell.Eval";
       wm_class = su "${gdbus} ${gseval} global.display.focus_window.wm_class";
@@ -192,9 +192,9 @@ in {
               check_for_pink() == False
           ), "Pink was present on the screen before we even launched a terminal!"
 
-      machine.systemctl("enable app-com.mitchellh.ghostty-debug.service", user="${user.name}")
+      machine.systemctl("enable app-io.github.pihalf.ghostty2-debug.service", user="${user.name}")
       machine.succeed("${su "${ghostty} +new-window"}")
-      machine.wait_until_succeeds("${wm_class} | grep -q 'com.mitchellh.ghostty-debug'")
+      machine.wait_until_succeeds("${wm_class} | grep -q 'io.github.pihalf.ghostty2-debug'")
 
       machine.sleep(2)
 
@@ -203,7 +203,7 @@ in {
               check_for_pink() == True
           ), "Pink was not found on the screen!"
 
-      machine.systemctl("stop app-com.mitchellh.ghostty-debug.service", user="${user.name}")
+      machine.systemctl("stop app-io.github.pihalf.ghostty2-debug.service", user="${user.name}")
     '';
   };
 
@@ -258,7 +258,7 @@ in {
       bus_path = "/run/user/${toString user.uid}/bus";
       bus = "DBUS_SESSION_BUS_ADDRESS=unix:path=${bus_path}";
       gdbus = "${bus} gdbus";
-      ghostty = "${bus} ghostty";
+      ghostty = "${bus} ghostty2";
       su = command: "su - ${user.name} -c '${command}'";
       gseval = "call --session -d org.gnome.Shell -o /org/gnome/Shell -m org.gnome.Shell.Eval";
       wm_class = su "${gdbus} ${gseval} global.display.focus_window.wm_class";
@@ -271,9 +271,9 @@ in {
           client.start()
           client.wait_for_x()
           client.wait_for_file("${bus_path}")
-          client.systemctl("enable app-com.mitchellh.ghostty-debug.service", user="${user.name}")
+          client.systemctl("enable app-io.github.pihalf.ghostty2-debug.service", user="${user.name}")
           client.succeed("${su "${ghostty} +new-window"}")
-          client.wait_until_succeeds("${wm_class} | grep -q 'com.mitchellh.ghostty-debug'")
+          client.wait_until_succeeds("${wm_class} | grep -q 'io.github.pihalf.ghostty2-debug'")
 
       with subtest("SSH from client to server and verify that the Ghostty terminfo is copied."):
           client.sleep(2)
@@ -317,7 +317,7 @@ in {
       bus_path = "/run/user/${toString user.uid}/bus";
       bus = "DBUS_SESSION_BUS_ADDRESS=unix:path=${bus_path}";
       gdbus = "${bus} gdbus";
-      ghostty = "${bus} ghostty";
+      ghostty = "${bus} ghostty2";
       su = command: "su - ${user.name} -c '${command}'";
       gseval = "call --session -d org.gnome.Shell -o /org/gnome/Shell -m org.gnome.Shell.Eval";
       wm_class = su "${gdbus} ${gseval} global.display.focus_window.wm_class";
@@ -346,14 +346,14 @@ in {
           return int(out)
 
       def window_open():
-          status, _ = machine.execute("${wm_class} | grep -q 'com.mitchellh.ghostty-debug'")
+          status, _ = machine.execute("${wm_class} | grep -q 'io.github.pihalf.ghostty2-debug'")
           return status == 0
 
       with subtest("boot and open a keep-alive ghostty window"):
           start_all()
           machine.wait_for_x()
           machine.wait_for_file("${bus_path}")
-          machine.systemctl("enable app-com.mitchellh.ghostty-debug.service", user="${user.name}")
+          machine.systemctl("enable app-io.github.pihalf.ghostty2-debug.service", user="${user.name}")
 
           # Under software GL the +new-window D-Bus activation can exceed its
           # client-side timeout even though the window still comes up, so we

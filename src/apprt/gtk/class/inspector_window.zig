@@ -89,7 +89,7 @@ pub const InspectorWindow = extern struct {
 
         // Set our window icon. We can't set this in the blueprint file
         // because its dependent on the build config.
-        self.as(gtk.Window).setIconName(build_config.bundle_id);
+        self.as(gtk.Window).setIconName(@import("../build/info.zig").base_application_id);
     }
 
     fn dispose(self: *Self) callconv(.c) void {

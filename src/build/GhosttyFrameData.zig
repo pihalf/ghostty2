@@ -1,5 +1,5 @@
 //! GhosttyFrameData generates a compressed file and zig module which contains (and exposes) the
-//! Ghostty animation frames for use in `ghostty +boo`
+//! Ghostty² animation frames for use in `ghostty2 +boo`
 const GhosttyFrameData = @This();
 
 const std = @import("std");

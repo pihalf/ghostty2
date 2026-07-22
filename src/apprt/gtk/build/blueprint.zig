@@ -13,14 +13,14 @@ pub const c = @cImport({
 
 pub const blueprint_compiler_help =
     \\
-    \\When building from a Git checkout, Ghostty requires
+    \\When building from a Git checkout, Ghostty² requires
     \\version {f} or newer of `blueprint-compiler` as a
     \\build-time dependency. Please install it, ensure that it
-    \\is available on your PATH, and then retry building Ghostty.
+    \\is available on your PATH, and then retry building Ghostty².
     \\See `HACKING.md` for more details.
     \\
     \\This message should *not* appear for normal users, who
-    \\should build Ghostty from official release tarballs instead.
+    \\should build Ghostty² from official release tarballs instead.
     \\Please consult https://ghostty.org/docs/install/build for
     \\more information on the recommended build instructions.
 ;
@@ -59,9 +59,9 @@ pub fn main() !void {
         std.debug.print(
             \\`libadwaita` is too old.
             \\
-            \\Ghostty requires a version {f} or newer of `libadwaita` to
+            \\Ghostty² requires a version {f} or newer of `libadwaita` to
             \\compile this blueprint. Please install it, ensure that it is
-            \\available on your PATH, and then retry building Ghostty.
+            \\available on your PATH, and then retry building Ghostty².
         , .{required_adwaita_version});
         std.posix.exit(1);
     }

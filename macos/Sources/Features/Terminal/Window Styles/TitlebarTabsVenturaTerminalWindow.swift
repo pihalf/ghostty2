@@ -2,10 +2,6 @@ import Cocoa
 
 /// Titlebar tabs for macOS 13 to 15.
 class TitlebarTabsVenturaTerminalWindow: TerminalWindow {
-    /// Titlebar tabs can't support the update accessory because of the way we layout
-    /// the native tabs back into the menu bar.
-    override var supportsUpdateAccessory: Bool { false }
-
     /// This is used to determine if certain elements should be drawn light or dark and should
     /// be updated whenever the window background color or surrounding elements changes.
     fileprivate var isLightTheme: Bool = false
@@ -586,7 +582,7 @@ private class WindowButtonsBackdropView: NSView {
 // Custom NSToolbar subclass that displays a centered window title,
 // in order to accommodate the titlebar tabs feature.
 private class TerminalToolbar: NSToolbar, NSToolbarDelegate {
-    private let titleTextField = CenteredDynamicLabel(labelWithString: "👻 Ghostty")
+    private let titleTextField = CenteredDynamicLabel(labelWithString: "👻 Ghostty²")
 
     var titleText: String {
         get {

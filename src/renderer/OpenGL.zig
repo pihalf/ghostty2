@@ -142,7 +142,7 @@ fn prepareContext(getProcAddress: anytype) !void {
         (major == MIN_VERSION_MAJOR and minor < MIN_VERSION_MINOR))
     {
         log.warn(
-            "OpenGL version is too old. Ghostty requires OpenGL {d}.{d}",
+            "OpenGL version is too old. Ghostty² requires OpenGL {d}.{d}",
             .{ MIN_VERSION_MAJOR, MIN_VERSION_MINOR },
         );
         return error.OpenGLOutdated;

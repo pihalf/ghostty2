@@ -5,6 +5,6 @@ MimeType=inode/directory
 Actions=RunGhosttyDir
 
 [Desktop Action RunGhosttyDir]
-Name=Open Ghostty Here
-Icon=com.mitchellh.ghostty
-Exec=ghostty +new-window --working-directory=%F
+Name=Open Ghostty² Here
+Icon=io.github.pihalf.ghostty2
+Exec=ghostty2 +new-window --working-directory=%F

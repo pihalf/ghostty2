@@ -5,7 +5,6 @@ pub const Thread = @This();
 const std = @import("std");
 const builtin = @import("builtin");
 const xev = @import("../global.zig").xev;
-const crash = @import("../crash/main.zig");
 const internal_os = @import("../os/main.zig");
 const rendererpkg = @import("../renderer.zig");
 const apprt = @import("../apprt.zig");
@@ -229,13 +228,6 @@ fn threadMain_(self: *Thread) !void {
     if (builtin.os.tag.isDarwin()) {
         internal_os.macos.pthread_setname_np(&"renderer".*);
     }
-
-    // Setup our crash metadata
-    crash.sentry.thread_state = .{
-        .type = .renderer,
-        .surface = self.renderer.surface_mailbox.surface,
-    };
-    defer crash.sentry.thread_state = null;
 
     // Setup our thread QoS
     self.setQosClass();

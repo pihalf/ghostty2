@@ -104,17 +104,17 @@ pub const Options = struct {
 ///
 /// If `--working-directory` is found on the command line and is a relative
 /// path (i.e. doesn't start with `/`) it will be resolved to an absolute path
-/// relative to the current working directory that the `ghostty +new-window`
+/// relative to the current working directory that the `ghostty2 +new-window`
 /// command is run from. `~/` prefixes will also be expanded to the user's home
 /// directory.
 ///
 /// If `--working-directory` is _not_ found on the command line, the working
-/// directory that `ghostty +new-window` is run from will be passed to Ghostty.
+/// directory that `ghostty2 +new-window` is run from will be passed to Ghostty².
 ///
 /// GTK uses an application ID to identify instances of applications. If Ghostty
 /// is compiled with release optimizations, the default application ID will be
-/// `com.mitchellh.ghostty`. If Ghostty is compiled with debug optimizations,
-/// the default application ID will be `com.mitchellh.ghostty-debug`.  The
+/// `io.github.pihalf.ghostty2`. If Ghostty² is compiled with debug optimizations,
+/// the default application ID will be `io.github.pihalf.ghostty2-debug`.  The
 /// `class` configuration entry can be used to set up a custom application
 /// ID. The class name must follow the requirements defined [in the GTK
 /// documentation](https://docs.gtk.org/gio/type_func.Application.id_is_valid.html)

@@ -240,7 +240,7 @@ fn pkgConfigFiles(
             \\libdir=${{prefix}}/lib
             \\
             \\Name: ghostty-internal
-            \\URL: https://github.com/ghostty-org/ghostty
+            \\URL: https://github.com/pihalf/ghostty2
             \\Description: Ghostty internal library (not for external use)
             \\Version: {f}
             \\Cflags: -I${{includedir}}
@@ -254,7 +254,7 @@ fn pkgConfigFiles(
             \\libdir=${{prefix}}/lib
             \\
             \\Name: ghostty-internal-static
-            \\URL: https://github.com/ghostty-org/ghostty
+            \\URL: https://github.com/pihalf/ghostty2
             \\Description: Ghostty internal library, static (not for external use)
             \\Version: {f}
             \\Cflags: -I${{includedir}}

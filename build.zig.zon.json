@@ -4,11 +4,6 @@
     "url": "https://deps.files.ghostty.org/DearBindings_v0.17_ImGui_v1.92.5-docking.tar.gz",
     "hash": "sha256-i/7FAOAJJvZ5hT7iPWfMOS08MYFzPKRwRzhlHT9wuqM="
   },
-  "N-V-__8AALw2uwF_03u4JRkZwRLc3Y9hakkYV7NKRR9-RIZJ": {
-    "name": "breakpad",
-    "url": "https://deps.files.ghostty.org/breakpad-b99f444ba5f6b98cac261cbb391d8766b34a5918.tar.gz",
-    "hash": "sha256-bMqYlD0amQdmzvYQd8Ca/1k4Bj/heh7+EijlQSttatk="
-  },
   "N-V-__8AAIrfdwARSa-zMmxWwFuwpXf1T3asIN7s5jqi9c1v": {
     "name": "fontconfig",
     "url": "https://deps.files.ghostty.org/fontconfig-2.14.2.tar.gz",
@@ -98,11 +93,6 @@
     "name": "plasma_wayland_protocols",
     "url": "https://deps.files.ghostty.org/plasma_wayland_protocols-12207e0851c12acdeee0991e893e0132fc87bb763969a585dc16ecca33e88334c566.tar.gz",
     "hash": "sha256-XFi6IUrNjmvKNCbcCLAixGqN2Zeymhs+KLrfccIN9EE="
-  },
-  "N-V-__8AAPlZGwBEa-gxrcypGBZ2R8Bse4JYSfo_ul8i2jlG": {
-    "name": "sentry",
-    "url": "https://deps.files.ghostty.org/sentry-1220446be831adcca918167647c06c7b825849fa3fba5f22da394667974537a9c77e.tar.gz",
-    "hash": "sha256-KsZJfMjWGo0xCT5HrduMmyxFsWsHBbszSoNbZCPDGN8="
   },
   "N-V-__8AANb6pwD7O1WG6L5nvD_rNMvnSc9Cpg1ijSlTYywv": {
     "name": "spirv_cross",

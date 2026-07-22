@@ -103,15 +103,6 @@ in
       };
     }
     {
-      name = "N-V-__8AALw2uwF_03u4JRkZwRLc3Y9hakkYV7NKRR9-RIZJ";
-      path = fetchZigArtifact {
-        name = "breakpad";
-        url = "https://deps.files.ghostty.org/breakpad-b99f444ba5f6b98cac261cbb391d8766b34a5918.tar.gz";
-        hash = "sha256-bMqYlD0amQdmzvYQd8Ca/1k4Bj/heh7+EijlQSttatk=";
-        unpack = false;
-      };
-    }
-    {
       name = "N-V-__8AAIrfdwARSa-zMmxWwFuwpXf1T3asIN7s5jqi9c1v";
       path = fetchZigArtifact {
         name = "fontconfig";
@@ -270,15 +261,6 @@ in
         name = "plasma_wayland_protocols";
         url = "https://deps.files.ghostty.org/plasma_wayland_protocols-12207e0851c12acdeee0991e893e0132fc87bb763969a585dc16ecca33e88334c566.tar.gz";
         hash = "sha256-XFi6IUrNjmvKNCbcCLAixGqN2Zeymhs+KLrfccIN9EE=";
-        unpack = false;
-      };
-    }
-    {
-      name = "N-V-__8AAPlZGwBEa-gxrcypGBZ2R8Bse4JYSfo_ul8i2jlG";
-      path = fetchZigArtifact {
-        name = "sentry";
-        url = "https://deps.files.ghostty.org/sentry-1220446be831adcca918167647c06c7b825849fa3fba5f22da394667974537a9c77e.tar.gz";
-        hash = "sha256-KsZJfMjWGo0xCT5HrduMmyxFsWsHBbszSoNbZCPDGN8=";
         unpack = false;
       };
     }

@@ -346,36 +346,6 @@ pub fn add(
         }
     }
 
-    // Sentry
-    if (self.config.sentry) {
-        if (b.lazyDependency("sentry", .{
-            .target = target,
-            .optimize = optimize,
-            .backend = .breakpad,
-        })) |sentry_dep| {
-            step.root_module.addImport(
-                "sentry",
-                sentry_dep.module("sentry"),
-            );
-            step.linkLibrary(sentry_dep.artifact("sentry"));
-            try static_libs.append(
-                b.allocator,
-                sentry_dep.artifact("sentry").getEmittedBin(),
-            );
-
-            // We also need to include breakpad in the static libs.
-            if (sentry_dep.builder.lazyDependency("breakpad", .{
-                .target = target,
-                .optimize = optimize,
-            })) |breakpad_dep| {
-                try static_libs.append(
-                    b.allocator,
-                    breakpad_dep.artifact("breakpad").getEmittedBin(),
-                );
-            }
-        }
-    }
-
     // Simd
     if (self.config.simd) try addSimd(
         b,

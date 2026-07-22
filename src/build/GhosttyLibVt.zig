@@ -342,7 +342,7 @@ fn pkgConfigFiles(
             \\libdir=${{prefix}}/lib
             \\
             \\Name: libghostty-vt
-            \\URL: https://github.com/ghostty-org/ghostty
+            \\URL: https://github.com/pihalf/ghostty2
             \\Description: Ghostty VT library
             \\Version: {f}
             \\Cflags: -I${{includedir}}
@@ -356,7 +356,7 @@ fn pkgConfigFiles(
             \\libdir=${{prefix}}/lib
             \\
             \\Name: libghostty-vt-static
-            \\URL: https://github.com/ghostty-org/ghostty
+            \\URL: https://github.com/pihalf/ghostty2
             \\Description: Ghostty VT library (static)
             \\Version: {f}
             \\Cflags: -I${{includedir}}

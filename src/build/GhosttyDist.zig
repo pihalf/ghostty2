@@ -19,7 +19,7 @@ check_step: *std.Build.Step,
 
 pub fn init(b: *std.Build, cfg: *const Config) !GhosttyDist {
     // The name prefix used for all paths in the archive.
-    const name = if (cfg.emit_lib_vt) "libghostty-vt" else "ghostty";
+    const name = if (cfg.emit_lib_vt) "libghostty-vt" else "ghostty2";
 
     // Get the resources we're going to inject into the source tarball.
     // lib-vt doesn't need GTK resources or frame data.
@@ -199,10 +199,8 @@ const lib_vt_excludes = &[_][]const u8{
 
     // Large binary assets
     "src/font/res",
-    "src/crash/testdata",
     "pkg/wuffs/src/too_big.jpg",
     "pkg/wuffs/src/too_big.png",
-    "pkg/breakpad/vendor",
 
     // Vendored libraries not used by lib-vt
     "vendor",
