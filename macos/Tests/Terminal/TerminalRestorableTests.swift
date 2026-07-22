@@ -9,7 +9,7 @@ struct TerminalRestorableTests {
         #expect(TerminalRestorableState.version == 7)
         #expect(TerminalRestorableState.minimumVersion == 5)
 
-        #expect(QuickTerminalRestorableState.version == 1)
+        #expect(QuickTerminalRestorableState.version == 3)
         #expect(QuickTerminalRestorableState.minimumVersion == 1)
     }
 
@@ -35,6 +35,178 @@ struct TerminalRestorableTests {
         #expect(state.screenStateEntries.isEmpty)
         #expect(state.surfaceTree.contains(where: { $0.id.uuidString == "2F2F2D93-944C-474A-83BA-4DC1868C3EB9" }))
         #expect(state.surfaceTree.contains(where: { $0.id.uuidString == "994C673F-B4C5-49EE-B044-65006652636D" }))
+
+        // V1 archives have no tab info. Migration must preserve their surface
+        // tree as a real tab instead of starting a replacement process.
+        #expect(state.tabs.count == 1)
+        #expect(state.tabs[0].surfaceTree.contains(where: {
+            $0.id.uuidString == "2F2F2D93-944C-474A-83BA-4DC1868C3EB9"
+        }))
+        #expect(state.tabs[0].focusedSurface == "123")
+        #expect(state.currentTabIndex == 0)
+    }
+
+    @MainActor
+    @Test func quickTerminalRestorableV3Roundtrip() throws {
+        let tree1 = try SplitTreeTests.makeHorizontalSplit()
+        let tree2 = try SplitTreeTests.makeHorizontalSplit()
+
+        let internalState = QuickTerminalRestorableState.InternalState<MockView>(
+            focusedSurface: "focus-id",
+            surfaceTree: tree1.0,
+            screenStateEntries: [:],
+            tabs: [
+                QuickTerminalTabState(
+                    surfaceTree: tree1.0,
+                    title: "tab-one",
+                    titleOverride: nil,
+                    tabColor: .none,
+                    focusedSurface: "focus-one"
+                ),
+                QuickTerminalTabState(
+                    surfaceTree: tree2.0,
+                    title: "tab-two",
+                    titleOverride: "renamed",
+                    tabColor: .green,
+                    focusedSurface: "focus-two"
+                ),
+            ],
+            currentTabIndex: 1
+        )
+
+        let original = DummyQuickTerminalRestorableState(internalState)
+        let data = try archive(CodableBridge(original), className: "CodableBridge<QuickTerminal>")
+
+        let decoded: CodableBridge<DummyQuickTerminalRestorableState> = try unarchive(
+            data,
+            className: "CodableBridge<QuickTerminal>"
+        )
+        let restored = decoded.value.internalState
+
+        #expect(restored.focusedSurface == "focus-id")
+        #expect(restored.tabs.count == 2)
+        #expect(restored.tabs[0].title == "tab-one")
+        #expect(restored.tabs[0].titleOverride == nil)
+        #expect(restored.tabs[0].tabColor == .none)
+        #expect(restored.tabs[0].focusedSurface == "focus-one")
+        #expect(restored.tabs[1].title == "tab-two")
+        #expect(restored.tabs[1].titleOverride == "renamed")
+        #expect(restored.tabs[1].tabColor == .green)
+        #expect(restored.tabs[1].focusedSurface == "focus-two")
+        #expect(restored.currentTabIndex == 1)
+    }
+
+    @MainActor
+    @Test func quickTerminalRestorableFromV2() throws {
+        let tree1 = try SplitTreeTests.makeHorizontalSplit()
+        let tree2 = try SplitTreeTests.makeHorizontalSplit()
+        let selectedFocus = tree2.2.id.uuidString
+        let legacy = QuickTerminalRestorableState.InternalState<MockView>(
+            focusedSurface: selectedFocus,
+            surfaceTree: tree2.0,
+            screenStateEntries: [:],
+            tabs: [
+                QuickTerminalTabState(
+                    surfaceTree: tree1.0,
+                    title: "tab-one",
+                    titleOverride: nil,
+                    tabColor: .none
+                ),
+                QuickTerminalTabState(
+                    surfaceTree: tree2.0,
+                    title: "tab-two",
+                    titleOverride: nil,
+                    tabColor: .none
+                ),
+            ],
+            currentTabIndex: 1
+        )
+
+        let data = try JSONEncoder().encode(legacy)
+        let restored = try JSONDecoder().decode(
+            QuickTerminalRestorableState.InternalState<MockView>.self,
+            from: data
+        )
+
+        #expect(restored.tabs[0].focusedSurface == nil)
+        #expect(restored.tabs[1].focusedSurface == selectedFocus)
+    }
+
+    @MainActor
+    @Test func quickTerminalMalformedTabIndexFallsBackToLegacyTree() throws {
+        let legacyTree = try SplitTreeTests.makeHorizontalSplit()
+        let tabTree = try SplitTreeTests.makeHorizontalSplit()
+        let state = QuickTerminalRestorableState.InternalState<MockView>(
+            focusedSurface: nil,
+            surfaceTree: legacyTree.0,
+            screenStateEntries: [:],
+            tabs: [
+                QuickTerminalTabState(
+                    surfaceTree: tabTree.0,
+                    title: "tab-one",
+                    titleOverride: nil,
+                    tabColor: .none
+                ),
+            ],
+            currentTabIndex: -1
+        )
+
+        #expect(state.selectedSurfaceTree.contains(where: { $0.id == legacyTree.1.id }))
+        #expect(!state.selectedSurfaceTree.contains(where: { $0.id == tabTree.1.id }))
+    }
+
+    @Test func quickTerminalMoveDestination() {
+        #expect(QuickTerminalTabManager.collectionMoveDestination(from: 2, to: 1) == 1)
+        #expect(QuickTerminalTabManager.collectionMoveDestination(from: 1, to: 2) == 3)
+        #expect(QuickTerminalTabManager.collectionMoveDestination(from: 0, to: 3) == 4)
+    }
+
+    @Test func quickTerminalNumericGotoClampsToLastTab() {
+        #expect(QuickTerminalTabManager.numericTabIndex(1, tabCount: 3) == 0)
+        #expect(QuickTerminalTabManager.numericTabIndex(8, tabCount: 3) == 2)
+        #expect(QuickTerminalTabManager.numericTabIndex(1, tabCount: 0) == nil)
+        #expect(QuickTerminalTabManager.numericTabIndex(0, tabCount: 3) == nil)
+    }
+
+    @MainActor
+    @Test func quickTerminalInactiveRootCloseRemovesTab() throws {
+        let view = MockView()
+        let tree = SplitTree<MockView>(view: view)
+        let result = try #require(QuickTerminalTabManager.inactiveSurfaceCloseResult(
+            target: view,
+            tree: tree,
+            focused: view
+        ))
+
+        #expect(result.tree == nil)
+        #expect(result.focused == nil)
+    }
+
+    @MainActor
+    @Test func quickTerminalInactiveSplitCloseRepairsFocus() throws {
+        let (tree, left, right) = try SplitTreeTests.makeHorizontalSplit()
+        let result = try #require(QuickTerminalTabManager.inactiveSurfaceCloseResult(
+            target: right,
+            tree: tree,
+            focused: right
+        ))
+        let remainingTree = try #require(result.tree)
+
+        #expect(remainingTree.contains(left))
+        #expect(!remainingTree.contains(right))
+        #expect(result.focused === left)
+    }
+
+    @Test func quickTerminalNewTabPreservesInheritedConfiguration() {
+        var inherited = Ghostty.SurfaceConfiguration()
+        inherited.workingDirectory = "/tmp/ghostty2"
+        inherited.environmentVariables["INHERITED"] = "yes"
+
+        let config = QuickTerminalTabManager.quickTerminalConfiguration(inheriting: inherited)
+
+        #expect(config.workingDirectory == "/tmp/ghostty2")
+        #expect(config.environmentVariables["INHERITED"] == "yes")
+        #expect(config.environmentVariables["GHOSTTY_QUICK_TERMINAL"] == "1")
     }
 
     // To generate old data: created a dummy class, archive, and copy the printed result
