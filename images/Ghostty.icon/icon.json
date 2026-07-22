@@ -97,6 +97,21 @@
           "fill" : "automatic",
           "glass" : false,
           "hidden" : false,
+          "image-name" : "Ghostty2 Mark.png",
+          "name" : "Ghostty²",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -2,
+              -262
+            ]
+          }
+        },
+        {
+          "blend-mode" : "normal",
+          "fill" : "automatic",
+          "glass" : false,
+          "hidden" : false,
           "image-name" : "Ghostty.png",
           "name" : "Ghostty",
           "position" : {

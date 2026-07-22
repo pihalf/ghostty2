@@ -18,6 +18,7 @@ struct ColorizedGhosttyIcon {
         guard let ghost = bundle.image(forResource: "CustomIconGhost") else { return nil }
         guard let crt = bundle.image(forResource: "CustomIconCRT") else { return nil }
         guard let gloss = bundle.image(forResource: "CustomIconGloss") else { return nil }
+        guard let ghostty2Mark = bundle.image(forResource: "CustomIconGhostty2Mark") else { return nil }
 
         let baseName = switch frame {
         case .aluminum: "CustomIconBaseAluminum"
@@ -42,6 +43,7 @@ struct ColorizedGhosttyIcon {
             tintedGhost,
             crt,
             gloss,
+            ghostty2Mark,
         ], blendingModes: [
             .normal,
             .normal,
@@ -49,6 +51,7 @@ struct ColorizedGhosttyIcon {
             .normal,
             .color,
             .overlay,
+            .normal,
             .normal,
         ])
     }
