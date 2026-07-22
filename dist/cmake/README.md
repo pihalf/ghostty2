@@ -14,7 +14,7 @@ Add the following to your project's `CMakeLists.txt`:
 ```cmake
 include(FetchContent)
 FetchContent_Declare(ghostty
-    GIT_REPOSITORY https://github.com/ghostty-org/ghostty.git
+    GIT_REPOSITORY https://github.com/pihalf/ghostty2.git
     GIT_TAG main
 )
 FetchContent_MakeAvailable(ghostty)

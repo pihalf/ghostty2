@@ -133,10 +133,9 @@ const locales = [_][]const u8{
 You should then be able to run `zig build run` and see your translations in
 action! See the ["Viewing translations" section](#viewing-translations) below.
 
-Before opening a pull request with the new translation file, you should also
-update the `CODEOWNERS` file. This is described in more detail in the
-["Localization teams" section](#localization-teams)—don't forget to read that
-section before submitting a pull request!
+Before opening a pull request with a new translation, mention whether you are a
+native speaker and note how you reviewed the strings in context. The fork does
+not maintain per-locale GitHub teams, so no ownership file needs to be updated.
 
 ## Viewing translations
 
@@ -157,54 +156,6 @@ client-side decorations with `zig build run -- --window-decoration=client`.
 Some strings are present in multiple places! A notable example is the context
 menus: the hamburger menu in the header bar duplicates many strings present in
 the right click menu.
-
-## Localization teams
-
-Every locale has a localization team consisting of the locale's maintainers.
-These maintainers review contributions to their locale's translations, and are
-responsible for translating new strings when requested: occasionally, all locale
-maintainers are pinged and requested to translate missing strings.
-
-The primary purposes of being a locale maintainer are a declaration of
-_commitment_ to their upkeep, and being _informed_ of updates or update requests
-of the translations, via GitHub's review requests or @mentions.
-
-So that future updates to a locale are possible, each localization team must
-have at least two members. If you are introducing a new language, please
-**consider volunteering** to be a part of the localization team, by mentioning
-that you are willing to be a part of it in the pull request description! You,
-and all reviewers, will be offered to join the locale team before the pull
-request to add the new language is merged, but this denotes your dedication
-upfront—for a pull request adding a new language to be merged, it needs at least
-one review from a speaker of that language _and_ at least two localization team
-members. No one is _required_ to join a localization team, even if they
-introduced support for the language.
-
-### `CODEOWNERS`
-
-Localization teams are represented as teams in the Ghostty GitHub organization.
-GitHub reads a `CODEOWNERS` file, which maps files to teams, to identify
-relevant maintainers. When **introducing support for a language**, you should
-add the `.po` file to `CODEOWNERS`.
-
-To do this, find the `# Localization` section near the bottom of the file, and
-add a line like so:
-
-```diff
- # Localization
- /po/README_TRANSLATORS.md @ghostty-org/localization
- /po/com.mitchellh.ghostty.pot @ghostty-org/localization
- /po/zh_CN.po @ghostty-org/zh_CN
-+/po/X.po @ghostty-org/yy_ZZ
-```
-
-`X.po` here is the name of the translation file you created. Unlike the
-translation file's name, localization team names **always include a language and
-country code**; `yy` here is the _language code_, and `ZZ` is the _country
-code_.
-
-When adding a new entry, try to keep the list in **alphabetical order** if
-possible.
 
 ## Style guide
 

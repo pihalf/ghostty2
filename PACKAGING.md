@@ -1,71 +1,45 @@
-# Packaging Ghostty for Distribution
+# Packaging Ghostty² for Distribution
 
-Ghostty relies on downstream package maintainers to distribute Ghostty to
+Ghostty² relies on downstream package maintainers to distribute Ghostty² to
 end-users. This document provides guidance to package maintainers on how to
-package Ghostty for distribution.
+package Ghostty² for distribution.
 
 > [!IMPORTANT]
 >
-> This document is only accurate for the Ghostty source alongside it.
-> **Do not use this document for older or newer versions of Ghostty!** If
-> you are reading this document in a different version of Ghostty, please
+> This document is only accurate for the Ghostty² source alongside it.
+> **Do not use this document for older or newer versions of Ghostty²!** If
+> you are reading this document in a different version of Ghostty², please
 > find the `PACKAGING.md` file alongside that version.
 
 ## Source Tarballs
 
-Source tarballs with stable checksums are available for tagged releases
-at `release.files.ghostty.org` in the following URL format where
-`VERSION` is the version number with no prefix such as `1.0.0`:
+Tagged source archives are available from this fork's GitHub Releases page.
+For a tag such as `v1.3.2+ghostty2.1`, use either Git or GitHub's archive:
 
 ```
-https://release.files.ghostty.org/VERSION/ghostty-VERSION.tar.gz
-https://release.files.ghostty.org/VERSION/ghostty-VERSION.tar.gz.minisig
+git clone --branch v1.3.2+ghostty2.1 --depth 1 https://github.com/pihalf/ghostty2.git
+https://github.com/pihalf/ghostty2/archive/refs/tags/v1.3.2+ghostty2.1.tar.gz
 ```
-
-Signature files are signed with
-[minisign](https://jedisct1.github.io/minisign/)
-using the following public key:
-
-```
-RWQlAjJC23149WL2sEpT/l0QKy7hMIFhYdQOFy0Z7z7PbneUgvlsnYcV
-```
-
-**Tip source tarballs** are available on the
-[GitHub releases page](https://github.com/ghostty-org/ghostty/releases/tag/tip).
-Use the `ghostty-source.tar.gz` asset and _not the GitHub auto-generated
-source tarball_. These tarballs are generated for every commit to
-the `main` branch and are not associated with a specific version.
 
 > [!WARNING]
 >
-> Source tarballs are _not the same_ as a Git checkout. Source tarballs
-> contain some preprocessed files that allow building Ghostty with less
-> dependencies. If you are building Ghostty from a Git checkout, the
-> steps below are the same but they may require additional dependencies
-> not listed here. See the `README.md` for more information on building
-> from a Git checkout.
->
-> For everyone except Ghostty developers, please use the source tarballs.
-> We generate tip source tarballs for users following the development
-> branch.
+> GitHub source archives do not contain Ghostty's preprocessed release-tarball
+> outputs. They have the same build requirements as a Git checkout. See the
+> `README.md` for the complete source-build prerequisites.
 
 ## Zig Version
 
-[Zig](https://ziglang.org) is required to build Ghostty. Prior to Zig 1.0,
-Zig releases often have breaking changes. Ghostty requires specific Zig versions
-depending on the Ghostty version in order to build. To make things easier for
-package maintainers, Ghostty always uses some _released_ version of Zig.
+[Zig](https://ziglang.org) is required to build Ghostty². Prior to Zig 1.0,
+Zig releases often have breaking changes. Ghostty² requires a specific released
+Zig version.
 
-To find the version of Zig required to build Ghostty, check the `required_zig`
-constant in `build.zig`. You don't need to know Zig to extract this information.
-This version will always be an official released version of Zig.
+The required version is `minimum_zig_version` in `build.zig.zon`. This source
+currently requires Zig 0.15.2.
 
-For example, at the time of writing this document, Ghostty requires Zig 0.14.0.
+## Building Ghostty²
 
-## Building Ghostty
-
-The following is a standard example of how to build Ghostty _for system
-packages_. This is not the recommended way to build Ghostty for your
+The following is a standard example of how to build Ghostty² _for system
+packages_. This is not the recommended way to build Ghostty² for your
 own system. For that, see the primary README.
 
 1. First, we fetch our dependencies from the internet into a cached directory.
@@ -75,10 +49,10 @@ own system. For that, see the primary README.
 ZIG_GLOBAL_CACHE_DIR=/tmp/offline-cache ./nix/build-support/fetch-zig-cache.sh
 ```
 
-2. Next, we build Ghostty. This step requires no internet access:
+2. Next, we build Ghostty². This step requires no internet access:
 
 ```sh
-DESTDIR=/tmp/ghostty \
+DESTDIR=/tmp/ghostty2 \
 zig build \
   --prefix /usr \
   --system /tmp/offline-cache/p \
@@ -87,15 +61,15 @@ zig build \
 ```
 
 The build options are covered in the next section, but this will build
-and install Ghostty to `/tmp/ghostty` with the prefix `/usr` (i.e. the
-binary will be at `/tmp/ghostty/usr/bin/ghostty`). This style is common
+and install Ghostty² to `/tmp/ghostty2` with the prefix `/usr` (i.e. the
+binary will be at `/tmp/ghostty2/usr/bin/ghostty2`). This style is common
 for system packages which separate a build and install step, since the
-install step can then be done with a `mv` or `cp` command (from `/tmp/ghostty`
+install step can then be done with a `mv` or `cp` command (from `/tmp/ghostty2`
 to wherever the package manager expects it).
 
 ### Build Options
 
-Ghostty uses the Zig build system. You can see all available build options by
+Ghostty² uses the Zig build system. You can see all available build options by
 running `zig build --help`. The following are options that are particularly
 relevant to package maintainers:
 

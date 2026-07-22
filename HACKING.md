@@ -1,28 +1,26 @@
-# Developing Ghostty
+# Developing Ghostty²
 
-This document describes the technical details behind Ghostty's development.
-If you'd like to open any pull requests or would like to implement new features
-into Ghostty, please make sure to read our ["Contributing to Ghostty"](CONTRIBUTING.md)
-document first.
+This document describes the technical details behind Ghostty² development.
+If you'd like to open any pull requests or implement new features in Ghostty²,
+please read the [contributing guide](CONTRIBUTING.md) first.
 
-To start development on Ghostty, you need to build Ghostty from a Git checkout,
-which is very similar in process to [building Ghostty from a source tarball](http://ghostty.org/docs/install/build). One key difference is that obviously
-you need to clone the Git repository instead of unpacking the source tarball:
+To start development on Ghostty², build it from a Git checkout as described in
+[the packaging guide](PACKAGING.md). First clone this fork:
 
 ```shell
-git clone https://github.com/ghostty-org/ghostty
-cd ghostty
+git clone https://github.com/pihalf/ghostty2
+cd ghostty2
 ```
 
 > [!NOTE]
 >
-> Ghostty may require [extra dependencies](#extra-dependencies)
+> Ghostty² may require [extra dependencies](#extra-dependencies)
 > when building from a Git checkout compared to a source tarball.
 > Tip versions may also require a different version of Zig or other toolchains
 > (e.g. the Xcode SDK on macOS) compared to stable versions — make sure to
 > follow the steps closely!
 
-When you're developing Ghostty, it's very likely that you will want to build a
+When you're developing Ghostty², it's very likely that you will want to build a
 _debug_ build to diagnose issues more easily. This is already the default for
 Zig builds, so simply run `zig build` **without any `-Doptimize` flags**.
 
@@ -77,8 +75,8 @@ sudo xcode-select --switch /Applications/Xcode.app
 
 ## AI and Agents
 
-If you're using AI assistance with Ghostty, Ghostty provides an
-[AGENTS.md file](https://github.com/ghostty-org/ghostty/blob/main/AGENTS.md)
+If you're using AI assistance with Ghostty², this repository provides an
+[AGENTS.md file](AGENTS.md)
 read by most of the popular AI agents to help produce higher quality
 results.
 
@@ -94,7 +92,7 @@ produced.
 
 > [!WARNING]
 >
-> All AI assistance usage [must be disclosed](https://github.com/ghostty-org/ghostty/blob/main/CONTRIBUTING.md#ai-assistance-notice)
+> All AI assistance usage must be disclosed,
 > and we expect contributors to understand the code that is produced and
 > be able to answer questions about it. If you don't understand the
 > code produced, feel free to disclose that, but if it has problems, we
@@ -103,16 +101,17 @@ produced.
 
 ## Logging
 
-Ghostty can write logs to a number of destinations. On all platforms, logging to
+Ghostty² can write logs to a number of destinations. On all platforms, logging to
 `stderr` is available. Depending on the platform and how Ghostty was launched,
 logs sent to `stderr` may be stored by the system and made available for later
 retrieval.
 
-On Linux if Ghostty is launched by the default `systemd` user service, you can use
-`journald` to see Ghostty's logs: `journalctl --user --unit app-com.mitchellh.ghostty.service`.
+On Linux if Ghostty² is launched by the default `systemd` user service, you can use
+`journald` to see its logs: `journalctl --user --unit app-io.github.pihalf.ghostty2.service`.
 
 On macOS logging to the macOS unified log is available and enabled by default.
-Use the system `log` CLI to view Ghostty's logs: `sudo log stream --level debug --predicate 'subsystem=="com.mitchellh.ghostty"'`.
+Use the system `log` CLI with the retained compatibility subsystem:
+`sudo log stream --level debug --predicate 'subsystem=="com.mitchellh.ghostty"'`.
 
 Ghostty's logging can be configured in two ways. The first is by what
 optimization level Ghostty is compiled with. If Ghostty is compiled with `Debug`
@@ -145,7 +144,7 @@ run this from the repo root before you commit:
 prettier --write .
 ```
 
-Make sure your Prettier version matches the version of Prettier in [devShell.nix](https://github.com/ghostty-org/ghostty/blob/main/nix/devShell.nix).
+Make sure your Prettier version matches the version in [devShell.nix](nix/devShell.nix).
 
 Nix users can use the following command to format with Prettier:
 
@@ -170,7 +169,7 @@ Non-Nix users should install Alejandra and use the following command to format w
 alejandra .
 ```
 
-Make sure your Alejandra version matches the version of Alejandra in [devShell.nix](https://github.com/ghostty-org/ghostty/blob/main/nix/devShell.nix).
+Make sure your Alejandra version matches the version in [devShell.nix](nix/devShell.nix).
 
 ### ShellCheck
 
@@ -205,7 +204,7 @@ the repo root before you commit:
 swiftlint lint --fix
 ```
 
-Make sure your SwiftLint version matches the version in [devShell.nix](https://github.com/ghostty-org/ghostty/blob/main/nix/devShell.nix).
+Make sure your SwiftLint version matches the version in [devShell.nix](nix/devShell.nix).
 
 Nix users can use the following command to format with SwiftLint:
 
@@ -386,7 +385,7 @@ new directory.
 {
   inputs = {
     nixpkgs.url = "nixpkgs/nixpkgs-unstable";
-    ghostty.url = "github:ghostty-org/ghostty";
+    ghostty.url = "github:pihalf/ghostty2";
   };
   outputs = {
     nixpkgs,
