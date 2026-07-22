@@ -2,8 +2,8 @@
 """Generate the Ghostty² app icons from Ghostty's upstream artwork.
 
 The upstream revision is pinned so the generated PNGs do not accumulate
-changes when this script is run more than once. The superscript mark is drawn
-as a vector path and then composited over the original artwork.
+changes when this script is run more than once. The Ghostty² badge is drawn as
+vector geometry and then composited over the original artwork.
 """
 
 from __future__ import annotations
@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import io
+import json
 import math
 import struct
 import subprocess
@@ -82,6 +83,18 @@ RASTER_TARGETS = (
     + MACOS_ALTERNATE_ICON_TARGETS
 )
 ICON_COMPOSER_MARK = Path("images/Ghostty.icon/Assets/Ghostty2 Mark.png")
+ICON_COMPOSER_CONFIG = Path("images/Ghostty.icon/icon.json")
+ICON_COMPOSER_BASE_TARGETS = tuple(
+    Path("images/Ghostty.icon/Assets") / filename
+    for filename in (
+        "Ghostty.png",
+        "Inner Bevel 6px.png",
+        "Screen Effects.png",
+        "Screen.png",
+        "gloss.png",
+    )
+)
+ICON_COMPOSER_MARK_POSITION = (147, -237)
 MANIFEST = Path("images/ghostty2-icons.manifest")
 CANONICAL_DIGEST_VERSION = b"ghostty2-icon-canonical-rgba-v1\0"
 CANONICAL_METADATA_KEYS = (
@@ -94,15 +107,15 @@ CANONICAL_METADATA_KEYS = (
 )
 
 RGBA = tuple[int, int, int, int]
-MarkPalette = tuple[RGBA, RGBA, RGBA, RGBA]
-DEFAULT_MARK_PALETTE: MarkPalette = (
+BadgePalette = tuple[RGBA, RGBA, RGBA, RGBA]
+DEFAULT_BADGE_PALETTE: BadgePalette = (
     (0, 112, 255, 220),
     (0, 20, 82, 255),
     (21, 139, 255, 255),
     (247, 252, 255, 255),
 )
-ALTERNATE_MARK_PALETTES: dict[str, MarkPalette] = {
-    "BlueprintImage.imageset": DEFAULT_MARK_PALETTE,
+ALTERNATE_BADGE_PALETTES: dict[str, BadgePalette] = {
+    "BlueprintImage.imageset": DEFAULT_BADGE_PALETTE,
     "ChalkboardImage.imageset": (
         (255, 255, 245, 130),
         (31, 31, 29, 255),
@@ -115,7 +128,7 @@ ALTERNATE_MARK_PALETTES: dict[str, MarkPalette] = {
         (100, 100, 100, 255),
         (245, 245, 245, 255),
     ),
-    "HolographicImage.imageset": DEFAULT_MARK_PALETTE,
+    "HolographicImage.imageset": DEFAULT_BADGE_PALETTE,
     "MicrochipImage.imageset": (
         (255, 103, 0, 210),
         (73, 31, 0, 255),
@@ -206,135 +219,189 @@ def draw_rounded_path(
     draw = ImageDraw.Draw(layer)
     draw.line(points, fill=color, width=width, joint="curve")
     radius = width / 2
-    for x, y in (points[0], points[-1]):
+    for x, y in points:
         draw.ellipse(
             (x - radius, y - radius, x + radius, y + radius),
             fill=color,
         )
 
 
-def render_mark(
+def render_badge(
     canvas_size: tuple[int, int],
     bounds: tuple[float, float, float, float],
-    palette: MarkPalette = DEFAULT_MARK_PALETTE,
+    palette: BadgePalette = DEFAULT_BADGE_PALETTE,
 ) -> Image.Image:
-    """Render a superscript mark with pixel-safe antialiasing."""
+    """Render a rounded Ghostty² badge with pixel-safe antialiasing."""
     scale = 8
-    width, height = canvas_size
-    left, top, mark_width, mark_height = bounds
-    padding = max(2, mark_width * 0.35)
+    left, top, badge_width, badge_height = bounds
+    badge_size = min(badge_width, badge_height)
+    padding = max(2, badge_size * 0.18)
     crop_left = math.floor(left - padding)
     crop_top = math.floor(top - padding)
-    crop_right = math.ceil(left + mark_width + padding)
-    crop_bottom = math.ceil(top + mark_height + padding)
+    crop_right = math.ceil(left + badge_width + padding)
+    crop_bottom = math.ceil(top + badge_height + padding)
     crop_size = (crop_right - crop_left, crop_bottom - crop_top)
     scaled_size = (crop_size[0] * scale, crop_size[1] * scale)
-    points = superscript_path(
+
+    badge_box = (
         (left - crop_left) * scale,
         (top - crop_top) * scale,
-        mark_width * scale,
-        mark_height * scale,
+        (left - crop_left + badge_width) * scale,
+        (top - crop_top + badge_height) * scale,
     )
+    radius = round(badge_size * scale * 0.20)
     glow_color, outline_color, accent_color, core_color = palette
 
     glow_source = Image.new("RGBA", scaled_size, (0, 0, 0, 0))
-    draw_rounded_path(
-        glow_source,
-        points,
-        glow_color,
-        max(scale, round(mark_width * scale * 0.25)),
+    ImageDraw.Draw(glow_source).rounded_rectangle(
+        badge_box,
+        radius=radius,
+        fill=glow_color,
     )
     glow = glow_source.filter(
-        ImageFilter.GaussianBlur(max(scale, mark_width * scale * 0.075))
+        ImageFilter.GaussianBlur(max(scale, badge_size * scale * 0.055))
     )
 
-    mark = Image.new("RGBA", scaled_size, (0, 0, 0, 0))
-    mark.alpha_composite(glow)
+    badge = Image.new("RGBA", scaled_size, (0, 0, 0, 0))
+    badge.alpha_composite(glow)
+    draw = ImageDraw.Draw(badge)
+    draw.rounded_rectangle(badge_box, radius=radius, fill=outline_color)
+
+    rim_inset = badge_size * scale * 0.035
+    rim_box = tuple(
+        coordinate + rim_inset if index < 2 else coordinate - rim_inset
+        for index, coordinate in enumerate(badge_box)
+    )
+    draw.rounded_rectangle(
+        rim_box,
+        radius=max(scale, round(radius - rim_inset)),
+        fill=core_color,
+    )
+
+    tile_inset = badge_size * scale * 0.075
+    tile_box = tuple(
+        coordinate + tile_inset if index < 2 else coordinate - tile_inset
+        for index, coordinate in enumerate(badge_box)
+    )
+    draw.rounded_rectangle(
+        tile_box,
+        radius=max(scale, round(radius - tile_inset)),
+        fill=accent_color,
+    )
+
+    points = superscript_path(
+        (left - crop_left + badge_width * 0.20) * scale,
+        (top - crop_top + badge_height * 0.14) * scale,
+        badge_width * 0.60 * scale,
+        badge_height * 0.68 * scale,
+    )
     draw_rounded_path(
-        mark,
+        badge,
         points,
         outline_color,
-        max(scale, round(mark_width * scale * 0.24)),
+        max(scale, round(badge_size * scale * 0.20)),
     )
     draw_rounded_path(
-        mark,
-        points,
-        accent_color,
-        max(scale, round(mark_width * scale * 0.17)),
-    )
-    draw_rounded_path(
-        mark,
+        badge,
         points,
         core_color,
-        max(scale, round(mark_width * scale * 0.085)),
+        max(scale, round(badge_size * scale * 0.135)),
     )
 
     canvas = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
     canvas.alpha_composite(
-        mark.resize(crop_size, Image.Resampling.LANCZOS),
+        badge.resize(crop_size, Image.Resampling.LANCZOS),
         (crop_left, crop_top),
     )
     return canvas
 
 
-def render_pixel_mark(canvas_size: tuple[int, int]) -> Image.Image:
-    """Render a hand-tuned 4x6 two for the 16px icon exports."""
+def render_pixel_badge(canvas_size: tuple[int, int]) -> Image.Image:
+    """Render a hand-tuned badge for the 16px icon exports."""
     width, height = canvas_size
     pixels = (
         "1111",
         "0001",
-        "0010",
-        "0100",
-        "1000",
+        "0011",
+        "0110",
+        "1100",
         "1111",
     )
-    left = round(width * 0.62)
-    top = round(height * 0.16)
+    left = width - 8
+    top = max(1, round(height * 0.06))
     layer = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(layer)
+    draw.rectangle((left, top, left + 7, top + 7), fill=(0, 20, 82, 255))
+    draw.rectangle((left + 1, top + 1, left + 6, top + 6), fill=(21, 139, 255, 255))
     for row, pattern in enumerate(pixels):
         for column, value in enumerate(pattern):
             if value == "1":
-                draw.point((left + column, top + row), fill=(230, 246, 255, 255))
+                draw.point(
+                    (left + 2 + column, top + 1 + row),
+                    fill=(247, 252, 255, 255),
+                )
     return layer
 
 
-def render_retro_mark(
+def render_retro_badge(
     canvas_size: tuple[int, int],
     bounds: tuple[float, float, float, float],
 ) -> Image.Image:
-    """Render the Retro alternate icon's superscript as aligned pixel art."""
-    left, top, mark_width, mark_height = bounds
+    """Render the Retro alternate icon's badge as aligned pixel art."""
+    left, top, badge_width, badge_height = bounds
     pixels = (
         "1111",
         "0001",
-        "0010",
-        "0100",
-        "1000",
+        "0011",
+        "0110",
+        "1100",
         "1111",
     )
-    padding = max(4, mark_width * 0.20)
+    padding = max(4, badge_width * 0.20)
     crop_left = math.floor(left - padding)
     crop_top = math.floor(top - padding)
-    crop_right = math.ceil(left + mark_width + padding)
-    crop_bottom = math.ceil(top + mark_height + padding)
+    crop_right = math.ceil(left + badge_width + padding)
+    crop_bottom = math.ceil(top + badge_height + padding)
     crop_size = (crop_right - crop_left, crop_bottom - crop_top)
     pixel_layer = Image.new("RGBA", crop_size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(pixel_layer)
-    block_width = mark_width / len(pixels[0])
-    block_height = mark_height / len(pixels)
+    outer = (
+        round(left - crop_left),
+        round(top - crop_top),
+        round(left - crop_left + badge_width),
+        round(top - crop_top + badge_height),
+    )
+    border = max(1, round(badge_width * 0.06))
+    draw.rectangle(outer, fill=(0, 25, 8, 255))
+    draw.rectangle(
+        (
+            outer[0] + border,
+            outer[1] + border,
+            outer[2] - border,
+            outer[3] - border,
+        ),
+        outline=(34, 255, 115, 255),
+        width=border,
+        fill=(0, 55, 20, 255),
+    )
+    digit_left = left - crop_left + badge_width * 0.23
+    digit_top = top - crop_top + badge_height * 0.17
+    digit_width = badge_width * 0.54
+    digit_height = badge_height * 0.66
+    block_width = digit_width / len(pixels[0])
+    block_height = digit_height / len(pixels)
     for row, pattern in enumerate(pixels):
         for column, value in enumerate(pattern):
             if value != "1":
                 continue
-            x0 = round(left - crop_left + column * block_width)
-            y0 = round(top - crop_top + row * block_height)
-            x1 = round(left - crop_left + (column + 1) * block_width) - 1
-            y1 = round(top - crop_top + (row + 1) * block_height) - 1
+            x0 = round(digit_left + column * block_width)
+            y0 = round(digit_top + row * block_height)
+            x1 = round(digit_left + (column + 1) * block_width) - 1
+            y1 = round(digit_top + (row + 1) * block_height) - 1
             draw.rectangle((x0, y0, x1, y1), fill=(34, 255, 115, 255))
 
     glow = pixel_layer.filter(
-        ImageFilter.GaussianBlur(max(3, mark_width * 0.045))
+        ImageFilter.GaussianBlur(max(3, badge_width * 0.045))
     )
     result = Image.new("RGBA", crop_size, (0, 0, 0, 0))
     result.alpha_composite(glow)
@@ -344,14 +411,13 @@ def render_retro_mark(
     return canvas
 
 
-def mark_bounds(size: tuple[int, int]) -> tuple[float, float, float, float]:
-    """Place the mark at the ghost's upper-right, with a small-icon floor."""
+def badge_bounds(size: tuple[int, int]) -> tuple[float, float, float, float]:
+    """Place the badge in the screen's upper-right, with a small-icon floor."""
     width, height = size
     minimum = min(width, height)
-    ratio = min(0.34, 0.16 + 2.8 / minimum)
-    mark_width = minimum * ratio
-    mark_height = mark_width * 1.08
-    return (width * 0.425, height * 0.155, mark_width, mark_height)
+    ratio = min(0.44, 0.245 + 3 / minimum)
+    badge_size = minimum * ratio
+    return (width * 0.52, height * 0.145, badge_size, badge_size)
 
 
 def require_upstream_revision(revision: str = UPSTREAM_ART_REVISION) -> bool:
@@ -371,14 +437,18 @@ def require_upstream_revision(revision: str = UPSTREAM_ART_REVISION) -> bool:
     return False
 
 
-def upstream_asset(relative_path: Path) -> tuple[Image.Image, dict[str, object]]:
+def upstream_bytes(relative_path: Path) -> bytes:
     result = subprocess.run(
         ["git", "show", f"{UPSTREAM_ART_REVISION}:{relative_path.as_posix()}"],
         cwd=REPOSITORY_ROOT,
         check=True,
         capture_output=True,
     )
-    source = Image.open(io.BytesIO(result.stdout))
+    return result.stdout
+
+
+def upstream_asset(relative_path: Path) -> tuple[Image.Image, dict[str, object]]:
+    source = Image.open(io.BytesIO(upstream_bytes(relative_path)))
     source.load()
     metadata: dict[str, object] = {}
     for key in ("icc_profile", "dpi", "transparency"):
@@ -390,20 +460,20 @@ def upstream_asset(relative_path: Path) -> tuple[Image.Image, dict[str, object]]
 def branded_asset(relative_path: Path) -> tuple[Image.Image, dict[str, object]]:
     source, metadata = upstream_asset(relative_path)
     if relative_path.parent.name == "RetroImage.imageset":
-        mark = render_retro_mark(source.size, mark_bounds(source.size))
-    elif palette := ALTERNATE_MARK_PALETTES.get(relative_path.parent.name):
-        mark = render_mark(source.size, mark_bounds(source.size), palette)
+        badge = render_retro_badge(source.size, badge_bounds(source.size))
+    elif palette := ALTERNATE_BADGE_PALETTES.get(relative_path.parent.name):
+        badge = render_badge(source.size, badge_bounds(source.size), palette)
     elif min(source.size) <= 20:
-        mark = render_pixel_mark(source.size)
+        badge = render_pixel_badge(source.size)
     else:
-        mark = render_mark(source.size, mark_bounds(source.size))
-    source.alpha_composite(mark)
+        badge = render_badge(source.size, badge_bounds(source.size))
+    source.alpha_composite(badge)
     return source, metadata
 
 
 def icon_composer_mark() -> Image.Image:
-    size = (220, 240)
-    return render_mark(size, (24, 18, 172, 204))
+    size = (300, 300)
+    return render_badge(size, (23, 23, 254, 254))
 
 
 def png_bytes(image: Image.Image, metadata: dict[str, object] | None = None) -> bytes:
@@ -478,9 +548,11 @@ def generated_assets() -> dict[Path, bytes]:
     for target in RASTER_TARGETS:
         image, metadata = branded_asset(target)
         assets[target] = png_bytes(image, metadata)
+    for target in ICON_COMPOSER_BASE_TARGETS:
+        assets[target] = upstream_bytes(target)
     assets[ICON_COMPOSER_MARK] = png_bytes(icon_composer_mark())
     assets[MACOS_CUSTOM_MARK_TARGET] = png_bytes(
-        render_mark((1024, 1024), mark_bounds((1024, 1024)))
+        render_badge((1024, 1024), badge_bounds((1024, 1024)))
     )
     manifest_lines = [
         "# Ghostty² canonical icon manifest v1\n",
@@ -496,6 +568,38 @@ def generated_assets() -> dict[Path, bytes]:
         )
     assets[MANIFEST] = "".join(manifest_lines).encode()
     return assets
+
+
+def check_icon_composer_config() -> bool:
+    """Verify the generated badge is the configured branded icon layer."""
+    config_path = REPOSITORY_ROOT / ICON_COMPOSER_CONFIG
+    try:
+        config = json.loads(config_path.read_text())
+        layers = [
+            layer
+            for group in config["groups"]
+            for layer in group.get("layers", ())
+            if layer.get("name") == "Ghostty²"
+        ]
+    except (KeyError, OSError, TypeError, ValueError) as error:
+        print(f"invalid Icon Composer config: {error}", file=sys.stderr)
+        return False
+
+    expected_position = {
+        "scale": 1,
+        "translation-in-points": list(ICON_COMPOSER_MARK_POSITION),
+    }
+    if len(layers) != 1:
+        print("Icon Composer config must contain one Ghostty² layer", file=sys.stderr)
+        return False
+    layer = layers[0]
+    if (
+        layer.get("image-name") != ICON_COMPOSER_MARK.name
+        or layer.get("position") != expected_position
+    ):
+        print("Icon Composer Ghostty² layer is out of date", file=sys.stderr)
+        return False
+    return True
 
 
 def write_assets(assets: dict[Path, bytes]) -> None:
@@ -597,7 +701,9 @@ def main() -> int:
         return 2
 
     assets = generated_assets()
-    valid = check_assets(assets) if args.check else True
+    valid = check_icon_composer_config()
+    if args.check:
+        valid = check_assets(assets) and valid
     if not args.check:
         write_assets(assets)
     if args.contact_sheet:

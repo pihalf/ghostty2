@@ -1,12 +1,17 @@
 # Ghostty²
 
-This patch makes macOS installer checksum verification independent of the
-caller's locale, including shells configured with `C.UTF-8`.
+Ghostty² now uses its own configuration namespace instead of reading Ghostty's
+configuration. Existing Ghostty files are never changed. During first setup,
+the installer offers to copy detected Ghostty settings; declining starts with
+Ghostty²'s built-in defaults. The app icon now uses a high-contrast corner
+badge so its 2 remains legible at Dock and launcher sizes.
 
 Ghostty² combines Ghostty's fast, native terminal with the two iTerm2 workflows this fork is built around:
 
 - A global Quake-style terminal, enabled by default with <kbd>Control</kbd>+<kbd>`</kbd>.
 - Multiple persistent tabs in the quick terminal: **Command+T** on macOS and **Control+Shift+T** on Linux.
+- Independent Ghostty² configuration, with optional import during installation.
+- A high-contrast Ghostty² icon badge that remains readable at small sizes.
 - The local crash-capture dependencies and bundled macOS updater are omitted; “Check for Updates…” opens this fork's Releases page.
 - A universal macOS app plus x86_64 and aarch64 Linux Flatpak bundles, all covered by `SHA256SUMS`.
 
