@@ -55,7 +55,11 @@ pub const i18n: bool = config.i18n;
 /// There are many places that don't use this variable so simply swapping
 /// this variable is NOT ENOUGH to change the bundle ID. I just wanted to
 /// avoid it in Zig coe as much as possible.
-pub const bundle_id = "com.mitchellh.ghostty";
+pub const bundle_id = "io.github.pihalf.ghostty2";
+
+/// The gettext catalogs retain Ghostty's existing domain so translations
+/// continue to resolve without renaming every generated catalog.
+pub const gettext_domain = "com.mitchellh.ghostty";
 
 /// True if we should have "slow" runtime safety checks. The initial motivation
 /// for this was terminal page/pagelist integrity checks. These were VERY

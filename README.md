@@ -21,7 +21,7 @@ Ghostty² (`ghostty2`) is an independent [Ghostty](https://github.com/ghostty-or
 - **Global Quake terminal:** press <kbd>Control</kbd>+<kbd>`</kbd> to show or hide the same drop-down terminal from anywhere. The shortcut is enabled by default and can be changed with normal Ghostty keybind configuration.
 - **Tabs inside the quick terminal:** <kbd>Command</kbd>+<kbd>T</kbd> on macOS or <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> on Linux creates another live terminal without leaving the drop-down window.
 - **Real multi-session behavior:** each tab keeps its own process and split tree while the quick terminal is hidden; tab switching, closing, moving, restoration, and close confirmation use the native platform UI.
-- **Ghostty compatibility:** configuration stays in the existing Ghostty location, `TERM` remains `xterm-ghostty`, and internal `libghostty`/protocol identifiers are unchanged.
+- **Ghostty compatibility:** Ghostty² uses its own configuration directory while keeping Ghostty's configuration syntax, `TERM=xterm-ghostty`, and internal `libghostty`/protocol identifiers.
 
 The result is deliberately small in scope: if iTerm2 and Ghostty had a child, this is the part of the family resemblance we wanted most.
 
@@ -33,7 +33,9 @@ Install the latest binary release:
 curl -fsSL https://raw.githubusercontent.com/pihalf/ghostty2/main/install.sh | sh
 ```
 
-On macOS this installs the universal `Ghostty2.app` into `~/Applications`. On Linux it installs the Flatpak bundle for the current CPU architecture. Linux requires [Flatpak](https://flatpak.org/setup/) and a configured Flathub remote.
+On macOS a new installation places the universal `Ghostty2.app` in `~/Applications`; upgrades preserve an existing copy in either `~/Applications` or `/Applications`. On Linux the installer installs the Flatpak bundle for the current CPU architecture. Linux requires [Flatpak](https://flatpak.org/setup/) and a configured Flathub remote. On first setup, the installer can copy an existing Ghostty configuration into Ghostty²; declining leaves the original untouched and starts Ghostty² with a clean configuration.
+
+Ghostty² reads its macOS configuration from `~/Library/Application Support/io.github.pihalf.ghostty2/config.ghostty` and its Linux configuration from the `ghostty2/config.ghostty` path under the platform's XDG configuration directory. Importing copies settings into that namespace; it never links to or modifies the original Ghostty configuration.
 
 You can also download the macOS ZIP or Linux Flatpak directly from [Releases](https://github.com/pihalf/ghostty2/releases).
 

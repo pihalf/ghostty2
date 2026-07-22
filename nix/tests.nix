@@ -162,7 +162,7 @@ in {
     settings = {
       home-manager.users.ghostty = {
         xdg.configFile = {
-          "ghostty/config".text = ''
+          "ghostty2/config.ghostty".text = ''
             background = ${pink_value}
           '';
         };
@@ -243,7 +243,7 @@ in {
           settings = {
             home-manager.users.ghostty = {
               xdg.configFile = {
-                "ghostty/config".text = let
+                "ghostty2/config.ghostty".text = let
                 in ''
                   shell-integration-features = ssh-terminfo
                 '';
@@ -304,7 +304,7 @@ in {
 
       home-manager.users.ghostty = {
         xdg.configFile = {
-          "ghostty/config".text = ''
+          "ghostty2/config.ghostty".text = ''
             bell-features = audio
             bell-audio-path = ${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/bell.oga
             bell-audio-volume = 0

@@ -64,6 +64,20 @@ jobs:
           python3 -m json.tool flatpak/zig-packages.json >/dev/null
           python3 -m json.tool images/Ghostty.icon/icon.json >/dev/null
           sh -n install.sh
+          sh test/install-config.sh
+          rg --fixed-strings 'pub const bundle_id = "io.github.pihalf.ghostty2";' src/build_config.zig
+          rg --fixed-strings 'pub const gettext_domain = "com.mitchellh.ghostty";' src/build_config.zig
+          rg --fixed-strings 'pub const xdg_config_dir = "ghostty2";' src/config/file_load.zig
+          rg --fixed-strings 'file_load.preferredDefaultFilePath' src/config/theme.zig
+          rg --fixed-strings 'build_config.gettext_domain' src/os/i18n.zig
+          if rg --fixed-strings 'ghostty/config' src/config/file_load.zig; then
+            echo "Ghostty² still reads Ghostty's configuration directory."
+            exit 1
+          fi
+          if rg --fixed-strings '"ghostty", "themes"' src/config/theme.zig; then
+            echo "Ghostty² still reads Ghostty's user theme directory."
+            exit 1
+          fi
 
   linux:
     name: Linux tests and GTK builds
@@ -214,6 +228,8 @@ jobs:
             "$app"
           /usr/bin/codesign --verify --deep --strict --verbose=2 "$app"
           plutil -lint "$plist"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$plist")" = \
+            "io.github.pihalf.ghostty2"
 
           archs=$(lipo -archs "$executable")
           case " $archs " in

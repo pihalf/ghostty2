@@ -8,11 +8,11 @@
 
 To configure Ghostty², you must use a configuration file. GUI-based configuration
 is on the roadmap but not yet supported. The configuration file must be placed
-at `$XDG_CONFIG_HOME/ghostty/config.ghostty`, which defaults to `~/.config/ghostty/config.ghostty`
+at `$XDG_CONFIG_HOME/ghostty2/config.ghostty`, which defaults to `~/.config/ghostty2/config.ghostty`
 if the [XDG environment is not set](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html).
 
 **If you are using macOS, the configuration file can also be placed at
-`$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty`.** This is the
+`$HOME/Library/Application Support/io.github.pihalf.ghostty2/config.ghostty`.** This is the
 default configuration location for macOS. It will be searched before any of the
 XDG environment locations listed above.
 
@@ -102,7 +102,7 @@ On Linux if Ghostty² is launched by the default `systemd` user service, you can
 
 On macOS logging to the macOS unified log is available and enabled by default.
 Use the system `log` CLI to view Ghostty²'s logs: `sudo log stream --level debug
---predicate 'subsystem=="com.mitchellh.ghostty"'`.
+--predicate 'subsystem=="io.github.pihalf.ghostty2"'`.
 
 Ghostty²'s logging can be configured in two ways. The first is by what
 optimization level Ghostty² is compiled with. If Ghostty² is compiled with `Debug`

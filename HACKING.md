@@ -110,8 +110,8 @@ On Linux if Ghostty² is launched by the default `systemd` user service, you can
 `journald` to see its logs: `journalctl --user --unit app-io.github.pihalf.ghostty2.service`.
 
 On macOS logging to the macOS unified log is available and enabled by default.
-Use the system `log` CLI with the retained compatibility subsystem:
-`sudo log stream --level debug --predicate 'subsystem=="com.mitchellh.ghostty"'`.
+Use the system `log` CLI with the Ghostty² subsystem:
+`sudo log stream --level debug --predicate 'subsystem=="io.github.pihalf.ghostty2"'`.
 
 Ghostty's logging can be configured in two ways. The first is by what
 optimization level Ghostty is compiled with. If Ghostty is compiled with `Debug`

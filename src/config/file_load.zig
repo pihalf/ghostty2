@@ -6,21 +6,27 @@ const internal_os = @import("../os/main.zig");
 
 const log = std.log.scoped(.config);
 
+pub const xdg_config_dir = "ghostty2";
+
 /// Default path for the XDG home configuration file. Returned value
 /// must be freed by the caller.
 pub fn defaultXdgPath(alloc: Allocator) ![]const u8 {
+    const subdir = try std.fs.path.join(alloc, &.{ xdg_config_dir, "config.ghostty" });
+    defer alloc.free(subdir);
     return try internal_os.xdg.config(
         alloc,
-        .{ .subdir = "ghostty/config.ghostty" },
+        .{ .subdir = subdir },
     );
 }
 
 /// Ghostty <1.3.0 default path for the XDG home configuration file.
 /// Returned value must be freed by the caller.
 pub fn legacyDefaultXdgPath(alloc: Allocator) ![]const u8 {
+    const subdir = try std.fs.path.join(alloc, &.{ xdg_config_dir, "config" });
+    defer alloc.free(subdir);
     return try internal_os.xdg.config(
         alloc,
-        .{ .subdir = "ghostty/config" },
+        .{ .subdir = subdir },
     );
 }
 
@@ -163,4 +169,40 @@ pub fn open(path: []const u8) OpenFileError!std.fs.File {
     if (stat.size == 0) return OpenFileError.FileIsEmpty;
 
     return file;
+}
+
+test "Ghostty2 uses an isolated XDG configuration directory" {
+    const testing = std.testing;
+    const alloc = testing.allocator;
+
+    const default_path = try defaultXdgPath(alloc);
+    defer alloc.free(default_path);
+    const legacy_path = try legacyDefaultXdgPath(alloc);
+    defer alloc.free(legacy_path);
+
+    const default_suffix = try std.fs.path.join(alloc, &.{
+        xdg_config_dir,
+        "config.ghostty",
+    });
+    defer alloc.free(default_suffix);
+    const legacy_suffix = try std.fs.path.join(alloc, &.{
+        xdg_config_dir,
+        "config",
+    });
+    defer alloc.free(legacy_suffix);
+
+    try testing.expect(std.mem.endsWith(u8, default_path, default_suffix));
+    try testing.expect(std.mem.endsWith(u8, legacy_path, legacy_suffix));
+}
+
+test "Ghostty2 uses an isolated macOS Application Support directory" {
+    if (comptime builtin.os.tag != .macos) return error.SkipZigTest;
+
+    const testing = std.testing;
+    const alloc = testing.allocator;
+    const path = try defaultAppSupportPath(alloc);
+    defer alloc.free(path);
+
+    try testing.expect(std.mem.indexOf(u8, path, "io.github.pihalf.ghostty2") != null);
+    try testing.expect(std.mem.indexOf(u8, path, "com.mitchellh.ghostty") == null);
 }

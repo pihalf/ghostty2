@@ -43,9 +43,9 @@ pub fn init(resources_dir: []const u8) InitError!void {
             const path = std.fmt.bufPrintZ(&buf, "{s}/locale", .{share_dir}) catch
                 return error.OutOfMemory;
 
-            // Bind our bundle ID to the given locale path
-            log.debug("binding domain={s} path={s}", .{ build_config.bundle_id, path });
-            _ = bindtextdomain(build_config.bundle_id, path.ptr) orelse
+            // Bind our gettext domain to the given locale path.
+            log.debug("binding domain={s} path={s}", .{ build_config.gettext_domain, path });
+            _ = bindtextdomain(build_config.gettext_domain, path.ptr) orelse
                 return error.OutOfMemory;
         },
     }
@@ -58,13 +58,13 @@ pub fn init(resources_dir: []const u8) InitError!void {
 /// Ghostty application. This should not be called for libghostty users.
 pub fn initGlobalDomain() error{OutOfMemory}!void {
     if (comptime !build_config.i18n) return;
-    _ = textdomain(build_config.bundle_id) orelse return error.OutOfMemory;
+    _ = textdomain(build_config.gettext_domain) orelse return error.OutOfMemory;
 }
 
 /// Translate a message for the Ghostty domain.
 pub fn _(msgid: [*:0]const u8) [*:0]const u8 {
     if (comptime !build_config.i18n) return msgid;
-    return dgettext(build_config.bundle_id, msgid);
+    return dgettext(build_config.gettext_domain, msgid);
 }
 
 /// Canonicalize a locale name from a platform-specific value to

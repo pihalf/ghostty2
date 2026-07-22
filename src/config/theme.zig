@@ -1,9 +1,8 @@
 const std = @import("std");
-const builtin = @import("builtin");
 const Allocator = std.mem.Allocator;
 const global_state = &@import("../global.zig").state;
-const internal_os = @import("../os/main.zig");
 const cli = @import("../cli.zig");
+const file_load = @import("file_load.zig");
 
 /// Location of possible themes. The order of this enum matters because it
 /// defines the priority of theme search (from top to bottom).
@@ -26,32 +25,17 @@ pub const Location = enum {
     ) error{OutOfMemory}!?[]const u8 {
         return switch (self) {
             .user => user: {
-                const subdir = std.fs.path.join(arena_alloc, &.{
-                    "ghostty", "themes",
-                }) catch return error.OutOfMemory;
-
-                break :user internal_os.xdg.config(
-                    arena_alloc,
-                    .{ .subdir = subdir },
-                ) catch |err| {
-                    // We need to do some comptime tricks to get the right
-                    // error set since some platforms don't support some
-                    // error types.
-                    const Error = @TypeOf(err) || switch (builtin.os.tag) {
-                        .ios => error{BufferTooSmall},
-                        else => error{},
+                const config_path = file_load.preferredDefaultFilePath(arena_alloc) catch |err| {
+                    return switch (err) {
+                        error.OutOfMemory => error.OutOfMemory,
+                        else => null,
                     };
-
-                    switch (@as(Error, err)) {
-                        error.OutOfMemory => return error.OutOfMemory,
-                        error.BufferTooSmall => return error.OutOfMemory,
-
-                        // Any other error we treat as the XDG directory not
-                        // existing. Windows in particularly can return a LOT
-                        // of errors here.
-                        else => return null,
-                    }
                 };
+                const config_dir = std.fs.path.dirname(config_path) orelse return null;
+                break :user std.fs.path.join(arena_alloc, &.{
+                    config_dir,
+                    "themes",
+                }) catch return error.OutOfMemory;
             },
 
             .resources => try std.fs.path.join(arena_alloc, &.{
@@ -92,6 +76,21 @@ pub const LocationIterator = struct {
         self.i = 0;
     }
 };
+
+test "user themes use the active Ghostty2 configuration directory" {
+    var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+    defer arena.deinit();
+    const alloc = arena.allocator();
+
+    const path = (try Location.user.dir(alloc)) orelse return error.TestUnexpectedResult;
+    const config_path = try file_load.preferredDefaultFilePath(alloc);
+    const config_dir = std.fs.path.dirname(config_path) orelse return error.TestUnexpectedResult;
+    const expected = try std.fs.path.join(alloc, &.{
+        config_dir,
+        "themes",
+    });
+    try std.testing.expectEqualStrings(expected, path);
+}
 
 /// Open the given named theme. If there are any errors then messages
 /// will be appended to the given error list and null is returned. If

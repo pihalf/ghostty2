@@ -80,9 +80,10 @@ const ThemeListElement = struct {
 ///
 /// Two different directories will be searched for themes.
 ///
-/// The first directory is the `themes` subdirectory of your Ghostty
-/// configuration directory. This is `$XDG_CONFIG_HOME/ghostty/themes` or
-/// `~/.config/ghostty/themes`.
+/// The first directory is the `themes` subdirectory beside your active
+/// Ghostty² configuration file. This is typically
+/// `$XDG_CONFIG_HOME/ghostty2/themes`; on macOS it defaults to
+/// `$HOME/Library/Application Support/io.github.pihalf.ghostty2/themes`.
 ///
 /// The second directory is the `themes` subdirectory of the Ghostty resources
 /// directory. Ghostty ships with a multitude of themes that will be installed

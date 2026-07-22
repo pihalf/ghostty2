@@ -1,7 +1,7 @@
-# This is the configuration file for Ghostty.
+# This is the configuration file for Ghostty².
 #
 # This template file has been automatically created at the following
-# path since Ghostty couldn't find any existing config files on your system:
+# path since Ghostty² couldn't find any existing config files on your system:
 #
 #   {[path]s}
 #
@@ -15,10 +15,10 @@
 # Run `ghostty2 +show-config --default --docs` to view a list of
 # all available config options and their default values.
 #
-# Additionally, each config option is also explained in detail
-# on Ghostty's website, at https://ghostty.org/docs/config.
+# Additionally, each config option is also explained in detail in Ghostty's
+# configuration documentation at https://ghostty.org/docs/config.
 #
-# Ghostty can reload the configuration while running by using the menu
+# Ghostty² can reload the configuration while running by using the menu
 # options or the bound key (default: Command + Shift + comma on macOS and
 # Control + Shift + comma on other platforms). Not all config options can be
 # reloaded while running; some only apply to new windows and others may require
