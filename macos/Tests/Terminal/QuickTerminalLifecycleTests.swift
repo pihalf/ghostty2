@@ -7,17 +7,32 @@ import Testing
 @Suite(.serialized)
 @MainActor
 struct QuickTerminalLifecycleTests {
+    /// Controllers schedule focus/animation work and undo retains closed tabs.
+    /// Their surfaces must never outlive the embedded app that owns them.
+    /// Match the real app's process lifetime instead of freeing it per test.
+    @MainActor
+    private final class Fixture {
+        let config: TemporaryConfig
+        let ghostty: Ghostty.App
+
+        init() throws {
+            config = try TemporaryConfig("""
+            initial-window = false
+            window-save-state = never
+            command = /usr/bin/true
+            wait-after-command = true
+            keybind = clear
+            """)
+            ghostty = Ghostty.App(configPath: config.temporaryFile.path())
+        }
+    }
+
+    private static let fixture: Result<Fixture, Error> = Result { try Fixture() }
+
     private func withTerminal(
         _ body: (QuickTerminalController, Ghostty.SurfaceView, Ghostty.SurfaceView) throws -> Void
     ) throws {
-        let config = try TemporaryConfig("""
-        initial-window = false
-        window-save-state = never
-        command = /usr/bin/true
-        wait-after-command = true
-        keybind = clear
-        """)
-        let ghostty = Ghostty.App(configPath: config.temporaryFile.path())
+        let ghostty = try Self.fixture.get().ghostty
         let app = try #require(ghostty.app)
         let controller = QuickTerminalController(ghostty)
         let first = Ghostty.SurfaceView(app)

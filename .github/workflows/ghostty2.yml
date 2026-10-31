@@ -225,7 +225,31 @@ jobs:
             -Dxcframework-target=native
 
       - name: Run the Swift test suite
-        run: nix develop -c nu macos/build.nu --action test
+        run: |
+          nix develop -c nu macos/build.nu --action test \
+            --result-bundle-path "$PWD/macos/build/Tests.xcresult"
+
+      - name: Report Swift test failures
+        if: always()
+        run: |
+          if test -d macos/build/Tests.xcresult; then
+            xcrun xcresulttool get test-results summary \
+              --path macos/build/Tests.xcresult | tee macos/build/test-summary.json
+            xcrun xcresulttool get test-results tests \
+              --path macos/build/Tests.xcresult > macos/build/test-details.json
+          fi
+
+      - name: Preserve Swift test diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: macos-test-results
+          path: |
+            macos/build/Tests.xcresult
+            macos/build/test-summary.json
+            macos/build/test-details.json
+          retention-days: 7
+          if-no-files-found: warn
 
       - name: Lint the integrated Swift lifecycle code
         run: |

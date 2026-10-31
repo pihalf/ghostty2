@@ -1,32 +1,32 @@
 {
   "upstream": "83fb95624b0439ee660c2679b43b38c8b63769cd",
   "baseline": "v1.3.2+ghostty2.3",
-  "candidate_commit": "95cb0ba52099e733db7e9a9e92c636724e9cbff6",
+  "candidate_commit": "a41bc3a513a4c0a9cda4fbc85d4cadcf5a5465b0",
   "promotion_allowed": false,
   "checks": [
     {
       "id": "linux_builds",
       "scope": "Wayland, X11, Nix and both Flatpak architectures",
       "status": "partial",
-      "evidence": "Local X11 GTK build passed. Current Wayland, Nix and both Flatpak builds are running in CI run 41251275147. The first Flatpak attempt exposed an unreachable transitive Git revision; the exact-content archive fix is committed."
+      "evidence": "Wayland, X11, graphical smoke and Nix package/CLI checks passed in CI run 41251275147. The corrected aarch64 Flatpak passed in run 41251733719; x86_64 is still building."
     },
     {
       "id": "macos_builds",
       "scope": "Swift suite, Zig suite and universal app bundle",
-      "status": "pending",
-      "evidence": null
+      "status": "failed",
+      "evidence": "The native framework and Swift app compile, but the Swift test run failed. The lifecycle fixture lifetime is being corrected and full xcresult diagnostics are being added before rerunning. Universal release packaging is still pending."
     },
     {
       "id": "core_regressions",
       "scope": "Full core suite and libghostty-vt suite",
-      "status": "partial",
-      "evidence": "Linux full core suite passed in CI run 41249809986; both local libghostty-vt suites passed. Current-candidate full suites are running in CI run 41251275147."
+      "status": "passed",
+      "evidence": "Linux: complete local core suite passed (4052 passed, 43 skipped, zero failures), using isolated caches with the full host font collection; both local libghostty-vt suites also passed. Linux core previously passed in CI run 41249809986. The production source tree is unchanged across these beta commits; macOS core validation is tracked under macos_builds."
     },
     {
       "id": "configuration",
       "scope": "Existing config, themes and upstream/fork isolation",
       "status": "partial",
-      "evidence": "test/smoke-cli.sh passed against the locally built beta: version, fork legacy/current configuration precedence, rejection of invalid configuration, and upstream configuration isolation. Custom themes and real existing profiles remain pending."
+      "evidence": "test/smoke-cli.sh passed against the locally built beta: version, fork legacy/current configuration precedence, invalid configuration rejection, upstream configuration isolation, and fork custom-theme lookup despite a same-named upstream theme. Real existing user profiles remain pending."
     },
     {
       "id": "quick_terminal_tabs",
@@ -72,7 +72,7 @@
     }
   ],
   "local_environment_notes": [
-    "Two initial fontconfig tests failed with existing host caches. Both passed with a fresh cache and the full host font collection, and with system fontconfig. No host cache was deleted or changed for remediation. A complete core rerun with isolated font caches is pending.",
+    "Two initial fontconfig tests failed with existing host caches. Both passed with a fresh cache and the full host font collection, and with system fontconfig. The complete local core rerun with isolated font caches passed (4052 passed, 43 skipped). No host cache was deleted or changed for remediation.",
     "The beta smoke build is Debug; its timings cannot be compared fairly with the installed ReleaseFast stable Flatpak.",
     "The stable Flatpak is built from 548ad6ea736f3e3c413dce36cef3db64f07df871; the behavioral test used temporary configuration, home, cache, state, display and D-Bus session."
   ]

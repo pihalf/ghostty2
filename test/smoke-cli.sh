@@ -28,6 +28,16 @@ printf 'font-size = 19\n' > "$XDG_CONFIG_HOME/ghostty2/config.ghostty"
 grep -x 'font-size = 19' "$smoke_dir/current"
 "$binary" +validate-config
 
+# A same-named upstream user theme must not shadow the fork's theme.
+mkdir -p "$XDG_CONFIG_HOME/ghostty/themes" "$XDG_CONFIG_HOME/ghostty2/themes"
+printf 'background = #909090\n' > "$XDG_CONFIG_HOME/ghostty/themes/BetaIsolation"
+printf 'background = #102030\nforeground = #405060\n' > "$XDG_CONFIG_HOME/ghostty2/themes/BetaIsolation"
+printf 'theme = BetaIsolation\n' >> "$XDG_CONFIG_HOME/ghostty2/config.ghostty"
+"$binary" +validate-config
+"$binary" +show-config > "$smoke_dir/themed"
+grep -E '^background = #?102030$' "$smoke_dir/themed"
+grep -E '^foreground = #?405060$' "$smoke_dir/themed"
+
 # Invalid configuration must be reported, not silently accepted.
 printf 'font-size = not-a-number\n' > "$XDG_CONFIG_HOME/ghostty2/config.ghostty"
 if "$binary" +validate-config > "$smoke_dir/invalid" 2>&1; then

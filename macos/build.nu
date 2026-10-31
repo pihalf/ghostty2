@@ -8,6 +8,7 @@ def main [
     --configuration: string = "Debug"  # Build configuration (Debug, Release, ReleaseLocal)
     --action: string = "build"         # xcodebuild action (build, test, clean, etc.)
     --universal                        # Build both arm64 and x86_64 macOS slices
+    --result-bundle-path: string        # Preserve Xcode test results and diagnostics
 ] {
     let project = ($env.FILE_PWD | path join "Ghostty.xcodeproj")
     let build_dir = ($env.FILE_PWD | path join "build")
@@ -26,6 +27,12 @@ def main [
         []
     }
 
+    let result_args = if $result_bundle_path != null {
+        [-resultBundlePath $result_bundle_path]
+    } else {
+        []
+    }
+
     (^env -i
         $"HOME=($env.HOME)"
         "PATH=/usr/bin:/bin:/usr/sbin:/sbin"
@@ -36,5 +43,6 @@ def main [
         $"SYMROOT=($build_dir)"
         ...$skip_testing
         ...$architecture_args
+        ...$result_args
         $action)
 }
