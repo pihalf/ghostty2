@@ -1,0 +1,37 @@
+{
+  "bundles": {
+    "stable": {
+      "sha256": "a4bfb40a075a3ffe9b9dd94aa9d09665850f9cb55bc9f2ba14e1dd4a3a07191c",
+      "commit": "16f2f537835ba177ca5220fe3738ed713996e2c7b396f8c50fe68594232f2ec6"
+    },
+    "beta": {
+      "sha256": "d01db2d1652e90ab59d3085b6664459d873b42085cf7bfd2777daa986a2d5c52",
+      "commit": "2b4811105a0f5fec2311ca3273c19e7ef600432d545e1ca014d1583cd4e68448"
+    }
+  },
+  "stages": [
+    {
+      "branch": "stable",
+      "version": "Ghostty\u00b2 1.3.2+ghostty2.3",
+      "profile_unchanged": true,
+      "graphical": "dbus-daemon[1473016]: [session uid=1000 pid=1473016] Activating service name='org.freedesktop.Flatpak' requested by ':1.0' (uid=1000 pid=1473018 comm=\"flatpak run --user --socket=x11 --nosocket=wayland\" label=\"flatpak (unconfined)\")\ndbus-daemon[1473016]: [session uid=1000 pid=1473016] Successfully activated service 'org.freedesktop.Flatpak'\nX11 startup, PTY, keyboard, resize ['25', '78'] -> ['30', '98'], and exit passed"
+    },
+    {
+      "branch": "beta",
+      "version": "Ghostty\u00b2 1.4.0-beta.1+a41bc3a",
+      "profile_unchanged": true,
+      "graphical": "dbus-daemon[1473376]: [session uid=1000 pid=1473376] Activating service name='org.freedesktop.Flatpak' requested by ':1.0' (uid=1000 pid=1473378 comm=\"flatpak run --user --socket=x11 --nosocket=wayland\" label=\"flatpak (unconfined)\")\ndbus-daemon[1473376]: [session uid=1000 pid=1473376] Successfully activated service 'org.freedesktop.Flatpak'\nX11 startup, PTY, keyboard, resize ['25', '78'] -> ['30', '98'], and exit passed",
+      "cli": "Ghostty\u00b2 1.4.0-beta.1+a41bc3a\n\nVersion\n  - version: 1.4.0-beta.1+a41bc3a\n  - channel: tip\nBuild Config\n  - Zig version   : 0.17.0\n  - build mode    : .fast\n  - app runtime   : .gtk\n  - font engine   : .fontconfig_freetype\n  - renderer      : renderer.generic.Renderer(renderer.OpenGL)\n  - libxev        : io_uring\n  - kernel version: 7.0.0-38-generic\n  - desktop env   : other\n  - GTK version   :\n    build         : 4.22.5\n    runtime       : 4.22.4\n  - libadwaita    : enabled\n    build         : 1.9.4\n    runtime       : 1.9.2\n  - libX11        : enabled\n  - libwayland    : enabled\nGhostty\u00b2 1.4.0-beta.1+a41bc3a\nGhostty\u00b2 1.4.0-beta.1+a41bc3a\n  - version: 1.4.0-beta.1+a41bc3a\nfont-size = 17\nfont-size = 19\nbackground = #102030\nforeground = #405060\nPackaged CLI and configuration isolation smoke tests passed"
+    },
+    {
+      "branch": "stable",
+      "version": "Ghostty\u00b2 1.3.2+ghostty2.3",
+      "profile_unchanged": true,
+      "graphical": "dbus-daemon[1473969]: [session uid=1000 pid=1473969] Activating service name='org.freedesktop.Flatpak' requested by ':1.0' (uid=1000 pid=1473971 comm=\"flatpak run --user --socket=x11 --nosocket=wayland\" label=\"flatpak (unconfined)\")\ndbus-daemon[1473969]: [session uid=1000 pid=1473969] Successfully activated service 'org.freedesktop.Flatpak'\nX11 startup, PTY, keyboard, resize ['25', '78'] -> ['30', '98'], and exit passed"
+    }
+  ],
+  "passed": true,
+  "candidate_commit": "a41bc3a513a4c0a9cda4fbc85d4cadcf5a5465b0",
+  "ci_run": "https://github.com/pihalf/ghostty2/actions/runs/41251733719",
+  "recorded_at": "2026-10-31T23:38:39.736189+00:00"
+}

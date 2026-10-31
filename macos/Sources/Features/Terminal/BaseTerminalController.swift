@@ -120,7 +120,7 @@ class BaseTerminalController: NSWindowController,
     /// which we set via the delegate method.
     override var undoManager: ExpiringUndoManager? {
         // This should be set via the delegate method windowWillReturnUndoManager
-        if let result = window?.undoManager as? ExpiringUndoManager {
+        if isWindowLoaded, let result = window?.undoManager as? ExpiringUndoManager {
             return result
         }
 
@@ -352,10 +352,11 @@ class BaseTerminalController: NSWindowController,
     /// what surface is focused. This must be called whenever a surface OR window changes focus.
     func syncFocusToSurfaceTree() {
         var newlyFocused: Ghostty.SurfaceView?
+        let windowIsKey = isWindowLoaded && (window?.isKeyWindow ?? false)
         for surfaceView in ownedSurfaces {
             // Our focus state requires that this window is key and our currently
             // focused surface is the surface in this view.
-            let focused: Bool = (window?.isKeyWindow ?? false) &&
+            let focused: Bool = windowIsKey &&
                 surfaceView == focusedSurface &&
                 surfaceView.isFirstResponder
             surfaceView.focusDidChange(focused)
@@ -1290,7 +1291,9 @@ class BaseTerminalController: NSWindowController,
     }
 
     func syncSurfaceTreeOcclusionState() {
-        let visible = self.window?.occlusionState.contains(.visible) ?? false
+        // Reading `window` loads its nib. Tree bookkeeping also runs during
+        // construction, when a quick terminal must not create a window/session.
+        let visible = isWindowLoaded && (window?.occlusionState.contains(.visible) ?? false)
         for view in surfaceTree {
             if let surface = view.surface, view.isWindowVisible != visible {
                 ghostty_surface_set_occlusion(surface, visible)

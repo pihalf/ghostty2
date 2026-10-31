@@ -19,9 +19,18 @@ if [ -n "${GHOSTTY_TEST_MESA:-}" ]; then
     export LIBGL_DRIVERS_PATH="$GHOSTTY_TEST_MESA/lib/dri"
     export GBM_BACKENDS_PATH="$GHOSTTY_TEST_MESA/lib/gbm"
 fi
+flatpak_services=""
+if [ "${GHOSTTY_TEST_FLATPAK:-0}" = 1 ]; then
+    # Flatpak's PTY launcher needs its host-spawn helper. Expose only that
+    # service on our private bus, not the desktop's portals or keyring.
+    mkdir "$smoke_session/services"
+    cp /usr/share/dbus-1/services/org.freedesktop.Flatpak.service "$smoke_session/services/"
+    flatpak_services="<servicedir>$smoke_session/services</servicedir>"
+fi
 cat > "$smoke_session/bus.conf" <<EOF
 <busconfig>
   <type>session</type>
+  $flatpak_services
   <listen>unix:tmpdir=$smoke_session</listen>
   <policy context="default">
     <allow send_destination="*"/>

@@ -298,9 +298,80 @@ fn processExit(
     _: *xev.Completion,
     r: xev.Process.WaitError!u32,
 ) xev.CallbackAction {
-    const exit_code = r catch unreachable;
+    const exit_code = r catch |err| exit_code: {
+        if (comptime builtin.target.os.tag.isDarwin() or builtin.target.os.tag == .freebsd) {
+            // A short-lived child can exit before kqueue registers NOTE_EXIT.
+            // Recover its actual status with waitpid instead of panicking.
+            if (err == error.NoSuchProcess) {
+                const process = td_.?.backend.exec.process.?;
+                break :exit_code (reapExitedProcess(process.pid) catch |wait_err| switch (wait_err) {
+                    error.NoChildProcess => missing: {
+                        // Another reaper already consumed the status. The child
+                        // is gone, but we must not invent a successful exit.
+                        log.warn("child exited before monitoring; exit status unavailable", .{});
+                        break :missing 255;
+                    },
+                    else => {
+                        log.err("failed to recover child exit status err={}", .{wait_err});
+                        return .disarm;
+                    },
+                }) orelse return .rearm;
+            }
+            if (err == error.Canceled) return .disarm;
+        }
+        unreachable;
+    };
     processExitCommon(td_.?, exit_code);
     return .disarm;
+}
+
+/// Poll a child whose exit notification could not be registered. A live child
+/// returns null so the watcher can be rearmed without blocking the IO thread.
+fn reapExitedProcess(pid: posix.pid_t) !?u32 {
+    var status: c_int = undefined;
+    while (true) {
+        const result = posix.system.waitpid(pid, &status, posix.system.W.NOHANG);
+        switch (posix.errno(result)) {
+            .SUCCESS => {
+                if (result == 0) return null;
+                const value: u32 = @bitCast(status);
+                // Match libxev's kqueue exit-status representation.
+                return if (posix.W.IFEXITED(value)) posix.W.EXITSTATUS(value) else 0;
+            },
+            .INTR => continue,
+            .CHILD => return error.NoChildProcess,
+            else => |err| return posix.unexpectedErrno(err),
+        }
+    }
+}
+
+test "recover an exited child before process monitoring" {
+    if (builtin.target.os.tag == .windows) return error.SkipZigTest;
+    var command: Command = .{
+        .path = "/bin/sh",
+        .args = &.{ "/bin/sh", "-c", "exit 37" },
+        .os_pre_exec = null,
+        .rt_pre_exec = null,
+        .rt_post_fork = null,
+        .rt_pre_exec_info = undefined,
+        .rt_post_fork_info = undefined,
+    };
+    command.start(std.testing.allocator) catch |err| {
+        // A failed exec returns in the forked child; it must not run tests.
+        if (err == error.ExecFailedInChild) posix.system.exit(1);
+        return err;
+    };
+    defer _ = command.wait(true) catch {};
+    const pid = command.pid.?;
+    for (0..5000) |_| {
+        if (try reapExitedProcess(pid)) |status| {
+            try std.testing.expectEqual(@as(u32, 37), status);
+            try std.testing.expectError(error.NoChildProcess, reapExitedProcess(pid));
+            return;
+        }
+        try std.Io.sleep(global.io(), .fromMilliseconds(1), .awake);
+    }
+    return error.TestUnexpectedResult;
 }
 
 fn flatpakExit(

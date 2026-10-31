@@ -381,7 +381,7 @@ class QuickTerminalController: BaseTerminalController {
         // If we're not empty (e.g. this isn't the first set) and we're
         // not visible, then we animate in. This allows us to show the quick
         // terminal when things such as undo/redo are done.
-        if !from.isEmpty && !visible {
+        if !from.isEmpty && !to.isEmpty && !visible {
             animateIn()
             return
         }

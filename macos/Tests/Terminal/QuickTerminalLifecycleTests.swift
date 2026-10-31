@@ -35,6 +35,8 @@ struct QuickTerminalLifecycleTests {
         let ghostty = try Self.fixture.get().ghostty
         let app = try #require(ghostty.app)
         let controller = QuickTerminalController(ghostty)
+        try #require(!controller.isWindowLoaded)
+        try #require(controller.tabManager.tabs.isEmpty)
         let first = Ghostty.SurfaceView(app)
         let second = Ghostty.SurfaceView(app)
         controller.tabManager.addTabWithSurfaceTree(.init(view: first))
@@ -46,6 +48,27 @@ struct QuickTerminalLifecycleTests {
             controller.window?.close()
         }
         try body(controller, first, second)
+    }
+
+    @Test func constructingQuickTerminalDoesNotCreateAWindowOrSession() throws {
+        let controller = QuickTerminalController(try Self.fixture.get().ghostty)
+        #expect(!controller.isWindowLoaded)
+        #expect(controller.surfaceTree.isEmpty)
+        #expect(controller.tabManager.tabs.isEmpty)
+        #expect(controller.ownedSurfaces.isEmpty)
+    }
+
+    @Test func closingLastHiddenTabDoesNotCreateAReplacementSession() throws {
+        try withTerminal { controller, _, _ in
+            controller.animateOut()
+            for tab in controller.tabManager.tabs {
+                controller.tabManager.closeTab(tab, withConfirmation: false)
+            }
+            #expect(controller.tabManager.tabs.isEmpty)
+            #expect(controller.surfaceTree.isEmpty)
+            #expect(controller.ownedSurfaces.isEmpty)
+            #expect(!controller.visible)
+        }
     }
 
     @Test func switchingTabsPreservesOwnershipAndPendingClipboardRequest() throws {
