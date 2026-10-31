@@ -126,6 +126,9 @@ jobs:
             -Dgtk-wayland=false \
             -Dgtk-x11=true
 
+      - name: Exercise the X11 app on an isolated display
+        run: nix develop -c sh test/smoke-x11.sh "$PWD/zig-out/bin/ghostty2"
+
       - name: Build and smoke-test the Nix package
         run: |
           nix build --print-build-logs .#ghostty2
@@ -187,6 +190,15 @@ jobs:
 
       - name: Run the Swift test suite
         run: nix develop -c nu macos/build.nu --action test
+
+      - name: Lint the integrated Swift lifecycle code
+        run: |
+          nix develop -c swiftlint lint --strict \
+            macos/Sources/Features/Terminal/BaseTerminalController.swift \
+            macos/Sources/Features/Terminal/TerminalController.swift \
+            macos/Sources/Features/QuickTerminal/QuickTerminalController.swift \
+            macos/Sources/Features/QuickTerminal/Tab/QuickTerminalTabManager.swift \
+            macos/Tests/Terminal/QuickTerminalLifecycleTests.swift
 
       - name: Determine the package version
         id: version

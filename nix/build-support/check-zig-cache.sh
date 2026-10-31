@@ -80,6 +80,18 @@ elif [ "$1" != "--update" ]; then
 fi
 
 zon2nix "$BUILD_ZIG_ZON" --17 --nix "$WORK_DIR/build.zig.zon.nix" --txt "$WORK_DIR/build.zig.zon.txt" --json "$WORK_DIR/build.zig.zon.json" --flatpak "$WORK_DIR/zig-packages.json"
+# This transitive vaxis dependency is no longer reachable from a Git branch.
+# Flatpak fetches advertised refs, so use the archive of the exact pinned commit.
+# `zig fetch` verifies that this archive has the same Zig package hash as the
+# Git source: zigimg-0.1.0-8_eo2ri_FwBqF5UYiggLz4IGjHJO_n9-B6gT9Ayqg8G4.
+jq 'map(if .type == "git" and .url == "https://github.com/sergot/zigimg" and
+    .commit == "c701c9f99779d7ddf594dcc6da8f858fd277d61f" then {
+      type: "archive",
+      url: "https://github.com/sergot/zigimg/archive/c701c9f99779d7ddf594dcc6da8f858fd277d61f.tar.gz",
+      sha256: "c716c6f262e03291b3801bfd399aec70f3c65069d4ca462ba7362273f88fea66",
+      dest: .dest
+    } else . end)' "$WORK_DIR/zig-packages.json" > "$WORK_DIR/zig-packages-pinned.json"
+mv "$WORK_DIR/zig-packages-pinned.json" "$WORK_DIR/zig-packages.json"
 alejandra --quiet "$WORK_DIR/build.zig.zon.nix"
 prettier --log-level warn --write "$WORK_DIR/build.zig.zon.json"
 prettier --log-level warn --write "$WORK_DIR/zig-packages.json"

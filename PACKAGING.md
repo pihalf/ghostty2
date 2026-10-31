@@ -34,7 +34,7 @@ Zig releases often have breaking changes. Ghostty² requires a specific released
 Zig version.
 
 The required version is `minimum_zig_version` in `build.zig.zon`. This source
-currently requires Zig 0.15.2.
+currently requires Zig 0.17.0.
 
 ## Building Ghostty²
 
@@ -56,7 +56,7 @@ DESTDIR=/tmp/ghostty2 \
 zig build \
   --prefix /usr \
   --system /tmp/offline-cache/p \
-  -Doptimize=ReleaseFast \
+  -Doptimize=fast \
   -Dcpu=baseline
 ```
 
@@ -82,11 +82,11 @@ relevant to package maintainers:
   the binary a PIE (Position Independent Executable) by default (override
   with `-Dpie`).
 
-- `-Doptimize=ReleaseFast`: Build with optimizations enabled and safety checks
+- `-Doptimize=fast`: Build with optimizations enabled and safety checks
   disabled. This is the recommended build mode for distribution. I'd prefer
   a safe build but terminal emulators are performance-sensitive and the
   safe build is currently too slow. I plan to improve this in the future.
-  Other build modes are available: `Debug`, `ReleaseSafe`, and `ReleaseSmall`.
+  Other build modes are available: `debug`, `safe`, and `small`.
 
 - `-Dcpu=baseline`: Build for the "baseline" CPU of the target architecture.
   This avoids building for newer CPU features that may not be available on
@@ -97,11 +97,11 @@ relevant to package maintainers:
   version, glibc, etc. Run `zig targets` to a get a full list of available
   targets.
 
-- `-Dinstalled-exe-path=$prefix/bin/ghostty`: The absolute path the
-  `ghostty` executable will be installed at, written into the desktop file,
+- `-Dinstalled-exe-path=$prefix/bin/ghostty2`: The absolute path the
+  `ghostty2` executable will be installed at, written into the desktop file,
   D-Bus service and systemd user service on Linux. The build can't work this
   out from `--prefix` itself. Without it, those files name the executable
-  alone (`ghostty`), and systemd only looks for that in standard directories
+  alone (`ghostty2`), and systemd only looks for that in standard directories
   such as `/usr/bin` and `/usr/local/bin`. Set it for any other prefix, and
   leave `DESTDIR` out of it.
 
@@ -111,7 +111,7 @@ libghostty-vt can be built for WebAssembly for use in browsers and other
 wasm runtimes:
 
 ```sh
-zig build -Demit-lib-vt -Dtarget=wasm32-freestanding -Doptimize=ReleaseSmall
+zig build -Demit-lib-vt -Dtarget=wasm32-freestanding -Doptimize=small
 ```
 
 This produces `zig-out/bin/ghostty-vt.wasm`.
@@ -133,7 +133,7 @@ Some notes for packaging the wasm module:
 
   ```sh
   zig build -Demit-lib-vt -Dtarget=wasm32-freestanding \
-    -Doptimize=ReleaseSmall -Dvt-features=-all,+render-state
+    -Doptimize=small -Dvt-features=-all,+render-state
   ```
 
   This roughly halves the compressed module size versus the default
@@ -144,16 +144,16 @@ Some notes for packaging the wasm module:
   ignored). See the `Features` struct in `src/terminal/build_options.zig`
   for the full list of features and what each one covers.
 
-- `ReleaseSmall` is the recommended optimization mode for the web. Running
+- `small` is the recommended optimization mode for the web. Running
   the result through [Binaryen's](https://github.com/WebAssembly/binaryen)
   `wasm-opt -O3` shrinks it by roughly a further 10% without hurting
   performance.
 
-- `ReleaseFast` measures 10-20% faster than `ReleaseSmall` on escape-heavy
+- `fast` measures 10-20% faster than `small` on escape-heavy
   terminal workloads, but the artifact is dominated by DWARF debug info.
   If you want the speed, strip it: `wasm-opt -O3 --strip-dwarf` reduces a
-  ReleaseFast build from over 5MB to roughly 1.1MB (versus roughly 0.8MB
-  for ReleaseSmall). When invoking `wasm-opt`, pass the feature flags for
+  fast build from over 5MB to roughly 1.1MB (versus roughly 0.8MB
+  for small). When invoking `wasm-opt`, pass the feature flags for
   what the module uses, e.g. `--enable-simd --enable-bulk-memory
 --enable-sign-ext --enable-nontrapping-float-to-int --enable-multivalue
 --enable-reference-types`.

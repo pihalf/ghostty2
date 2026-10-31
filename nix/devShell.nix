@@ -173,6 +173,11 @@ in
         valgrind
         wraptest
 
+        # Isolated graphical smoke tests need tools from the same libc as GTK.
+        pkgs.xvfb-run
+        pkgs.xdotool
+        pkgs.dbus
+
         bzip2
         expat
         fontconfig
@@ -233,6 +238,7 @@ in
     # it to be "portable" across the system.
     LD_LIBRARY_PATH = ld_library_path;
     GI_TYPELIB_PATH = gi_typelib_path;
+    GHOSTTY_TEST_MESA = lib.optionalString stdenv.hostPlatform.isLinux "${pkgs.mesa}";
 
     shellHook =
       (lib.optionalString stdenv.hostPlatform.isLinux ''
