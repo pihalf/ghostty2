@@ -30,6 +30,12 @@ cat > "$smoke_session/bus.conf" <<EOF
   </policy>
 </busconfig>
 EOF
-xvfb-run -a -e /dev/stderr -s '-screen 0 1280x800x24' \
+if xvfb-run -a -e "$smoke_session/xvfb.log" -s '-screen 0 1280x800x24 -dpi 96' \
     dbus-run-session --config-file="$smoke_session/bus.conf" -- \
-    python3 "$script_dir/smoke-x11.py" "$binary"
+    python3 "$script_dir/smoke-x11.py" "$binary"; then
+    :
+else
+    smoke_status=$?
+    cat "$smoke_session/xvfb.log" >&2
+    exit "$smoke_status"
+fi

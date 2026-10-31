@@ -15,7 +15,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # Keep each beta candidate's evidence while packaging fixes are being tested.
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ startsWith(github.ref, 'refs/heads/beta-release/') && github.sha || 'latest' }}
   cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 env:
@@ -67,6 +68,9 @@ jobs:
           sh -n install.sh
           sh test/install-config.sh
           python3 test/check-beta-release.py --self-test
+          required_zig=$(sed -n 's/.*minimum_zig_version = "\([^"]*\)".*/\1/p' build.zig.zon)
+          test -n "$required_zig"
+          test "$(grep -F -c "https://ziglang.org/download/$required_zig/zig-" flatpak/dependencies.yml)" -eq 2
           rg --fixed-strings 'pub const bundle_id = "io.github.pihalf.ghostty2";' src/build_config.zig
           rg --fixed-strings 'pub const gettext_domain = "com.mitchellh.ghostty";' src/build_config.zig
           rg --fixed-strings 'pub const xdg_config_dir = "ghostty2";' src/config/file_load.zig

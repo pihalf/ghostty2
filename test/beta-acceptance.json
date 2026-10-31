@@ -1,14 +1,14 @@
 {
   "upstream": "83fb95624b0439ee660c2679b43b38c8b63769cd",
   "baseline": "v1.3.2+ghostty2.3",
-  "candidate_commit": null,
+  "candidate_commit": "95cb0ba52099e733db7e9a9e92c636724e9cbff6",
   "promotion_allowed": false,
   "checks": [
     {
       "id": "linux_builds",
       "scope": "Wayland, X11, Nix and both Flatpak architectures",
-      "status": "pending",
-      "evidence": null
+      "status": "partial",
+      "evidence": "Local X11 GTK build passed. Current Wayland, Nix and both Flatpak builds are running in CI run 41251275147. The first Flatpak attempt exposed an unreachable transitive Git revision; the exact-content archive fix is committed."
     },
     {
       "id": "macos_builds",
@@ -19,14 +19,14 @@
     {
       "id": "core_regressions",
       "scope": "Full core suite and libghostty-vt suite",
-      "status": "pending",
-      "evidence": null
+      "status": "partial",
+      "evidence": "Linux full core suite passed in CI run 41249809986; both local libghostty-vt suites passed. Current-candidate full suites are running in CI run 41251275147."
     },
     {
       "id": "configuration",
       "scope": "Existing config, themes and upstream/fork isolation",
-      "status": "pending",
-      "evidence": null
+      "status": "partial",
+      "evidence": "test/smoke-cli.sh passed against the locally built beta: version, fork legacy/current configuration precedence, rejection of invalid configuration, and upstream configuration isolation. Custom themes and real existing profiles remain pending."
     },
     {
       "id": "quick_terminal_tabs",
@@ -55,8 +55,8 @@
     {
       "id": "desktop_behavior",
       "scope": "Hotkey, fullscreen, multiple monitors, hide/show, Wayland supported compositor",
-      "status": "pending",
-      "evidence": null
+      "status": "partial",
+      "evidence": "Isolated Xvfb tests passed for the beta and installed stable 1.3.2+ghostty2.3: real PTY startup, keyboard input, nonzero resized PTY dimensions, and clean exit. This does not cover visual fidelity, native compositor behavior or hotkeys."
     },
     {
       "id": "install_upgrade_rollback",
@@ -70,5 +70,10 @@
       "status": "pending",
       "evidence": null
     }
+  ],
+  "local_environment_notes": [
+    "Two initial fontconfig tests failed with existing host caches. Both passed with a fresh cache and the full host font collection, and with system fontconfig. No host cache was deleted or changed for remediation. A complete core rerun with isolated font caches is pending.",
+    "The beta smoke build is Debug; its timings cannot be compared fairly with the installed ReleaseFast stable Flatpak.",
+    "The stable Flatpak is built from 548ad6ea736f3e3c413dce36cef3db64f07df871; the behavioral test used temporary configuration, home, cache, state, display and D-Bus session."
   ]
 }

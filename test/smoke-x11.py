@@ -50,15 +50,17 @@ shell-integration = none
 """)
         child = root / "child.sh"
         child.write_text("""set -eu
+smoke_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+exec 2> "$smoke_dir/child-errors"
 test -t 0 && test -t 1
 test "$TERM" = xterm-ghostty
-stty size > "$GHOSTTY2_SMOKE_DIR/initial-size"
+stty size > "$smoke_dir/initial-size"
 printf '\\033[31mGhostty² beta: UTF-8 ✓ and ANSI color\\033[0m\\n'
-touch "$GHOSTTY2_SMOKE_DIR/ready"
+touch "$smoke_dir/ready"
 IFS= read -r input
 test "$input" = ghostty2-beta-input
-stty size > "$GHOSTTY2_SMOKE_DIR/resized"
-touch "$GHOSTTY2_SMOKE_DIR/passed"
+stty size > "$smoke_dir/resized"
+touch "$smoke_dir/passed"
 """)
         log = root / "application.log"
         with log.open("w") as output:
@@ -95,6 +97,8 @@ touch "$GHOSTTY2_SMOKE_DIR/passed"
                 print(f"X11 startup, PTY, keyboard, resize {initial} -> {resized}, and exit passed")
             except BaseException:
                 print(log.read_text(), file=sys.stderr)
+                if (root / "child-errors").exists():
+                    print((root / "child-errors").read_text(), file=sys.stderr)
                 raise
             finally:
                 if process.poll() is None:

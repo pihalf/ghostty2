@@ -36,6 +36,14 @@ modules:
     build-options:
       append-path: /app/zig
     build-commands:
+      # Match nix/devShell.nix: Zig 0.17 rejects these pkg-config C flags.
+      - mkdir -p /app/lib/pkgconfig
+      - sed 's/-mfpmath=sse -msse -msse2//g'
+        "$(pkg-config --variable=pcfiledir graphene-1.0)/graphene-1.0.pc"
+        > /app/lib/pkgconfig/graphene-1.0.pc
+      - sed 's/-Wl,--export-dynamic//g'
+        "$(pkg-config --variable=pcfiledir gmodule-2.0)/gmodule-2.0.pc"
+        > /app/lib/pkgconfig/gmodule-2.0.pc
       - zig build
         -Doptimize=fast
         -Dcpu=baseline
