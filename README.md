@@ -25,6 +25,19 @@ Ghostty² (`ghostty2`) is an independent [Ghostty](https://github.com/ghostty-or
 
 The result is deliberately small in scope: if iTerm2 and Ghostty had a child, this is the part of the family resemblance we wanted most.
 
+## Beta integration
+
+The `beta-release/1.4.0` branch integrates upstream v1.4.0. It is not the
+stable release. CI artifacts are for testing; beta tags publish GitHub
+prereleases and never replace `latest`. The default installer continues to
+install the previous stable release.
+
+Promotion is blocked until the comparison against `v1.3.2+ghostty2.3` in
+`test/beta-acceptance.json` is complete, including native macOS and supported
+Wayland desktop checks. Passing compilation alone does not satisfy this gate.
+Stable publication requires a separate promotion change after that review;
+this branch's workflow can publish only beta tags.
+
 ## Install
 
 Install the latest binary release:
@@ -47,12 +60,12 @@ nix profile install github:pihalf/ghostty2#ghostty2
 
 ## Build from source
 
-Ghostty² uses Ghostty's build system and Zig 0.15.2:
+Ghostty² uses Ghostty's build system and Zig 0.17.0:
 
 ```sh
 git clone https://github.com/pihalf/ghostty2.git
 cd ghostty2
-zig build -Doptimize=ReleaseFast
+zig build -Doptimize=fast
 ```
 
 The result is `zig-out/bin/ghostty2` on Linux and `zig-out/Ghostty2.app` on macOS. Linux needs the GTK/libadwaita/layer-shell development packages; macOS needs full Xcode with the macOS, iOS, and Metal components. The Nix development shell provides the remaining build dependencies.

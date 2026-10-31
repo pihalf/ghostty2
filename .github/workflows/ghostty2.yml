@@ -5,8 +5,9 @@ on:
     branches:
       - main
       - "pihalf/**"
+      - "beta-release/**"
     tags:
-      - "v*"
+      - "v1.4.0-beta.*"
   pull_request:
   workflow_dispatch:
 
@@ -48,7 +49,7 @@ jobs:
           test "$(rg --count 'Deprecated compatibility option\. Ghostty²' src/config/Config.zig)" -eq 2
           rg --fixed-strings \
             'https://github.com/pihalf/ghostty2/releases' \
-            macos/Sources/App/macOS/AppDelegate.swift
+            macos/Sources/App/AppDelegate.swift
 
       - name: Check generated icons
         run: |
@@ -65,6 +66,7 @@ jobs:
           python3 -m json.tool images/Ghostty.icon/icon.json >/dev/null
           sh -n install.sh
           sh test/install-config.sh
+          python3 test/check-beta-release.py --self-test
           rg --fixed-strings 'pub const bundle_id = "io.github.pihalf.ghostty2";' src/build_config.zig
           rg --fixed-strings 'pub const gettext_domain = "com.mitchellh.ghostty";' src/build_config.zig
           rg --fixed-strings 'pub const xdg_config_dir = "ghostty2";' src/config/file_load.zig
@@ -102,10 +104,13 @@ jobs:
         run: nix develop -c ./nix/build-support/check-zig-cache.sh
 
       - name: Check Zig formatting
-        run: nix develop -c zig fmt --check .
+        run: git ls-files -z '*.zig' '*.zon' | nix develop -c xargs -0 zig fmt --check
 
       - name: Run the core test suite
         run: nix develop -c zig build -Dapp-runtime=none test
+
+      - name: Run the libghostty-vt test suite
+        run: nix develop -c zig build test-lib-vt
 
       - name: Build the Wayland application
         run: |
@@ -127,11 +132,12 @@ jobs:
           test -x result/bin/ghostty2
           result/bin/ghostty2 +version | tee /tmp/ghostty2-version
           grep --fixed-strings 'Ghostty²' /tmp/ghostty2-version
+          nix develop -c sh test/smoke-cli.sh "$(readlink -f result/bin/ghostty2)"
 
   macos:
     name: macOS tests and universal app
     needs: privacy
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 120
     steps:
       - name: Check out the source
@@ -148,6 +154,9 @@ jobs:
         uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
         with:
           name: ghostty
+
+      - name: Select the upstream Apple toolchain
+        run: sudo xcode-select -s /Applications/Xcode_27.1.app
 
       - name: Show the Apple toolchain
         run: |
@@ -186,7 +195,7 @@ jobs:
           if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
             value="${GITHUB_REF_NAME#v}"
           else
-            value="1.3.2-dev+${GITHUB_SHA:0:7}"
+            value="$(sed -n 's/.*\.version = "\([^"]*\)".*/\1/p' build.zig.zon)+${GITHUB_SHA:0:7}"
           fi
           echo "value=$value" >> "$GITHUB_OUTPUT"
           echo "short=${value%%[-+]*}" >> "$GITHUB_OUTPUT"
@@ -195,7 +204,7 @@ jobs:
         run: |
           nix develop -c zig build \
             --system "${{ steps.deps.outputs.path }}" \
-            -Doptimize=ReleaseFast \
+            -Doptimize=fast \
             -Demit-macos-app=false \
             -Dxcframework-target=universal \
             -Dversion-string="${{ steps.version.outputs.value }}"
@@ -285,12 +294,12 @@ jobs:
           manifest-path: flatpak/io.github.pihalf.ghostty2.yml
           cache-key: ghostty2-flatpak-${{ matrix.arch }}-${{ github.sha }}
           arch: ${{ matrix.arch }}
-          branch: stable
+          branch: beta
           verbose: true
 
   release:
-    name: Publish release
-    if: startsWith(github.ref, 'refs/tags/v')
+    name: Publish beta prerelease
+    if: startsWith(github.ref, 'refs/tags/v1.4.0-beta.')
     needs:
       - privacy
       - linux
@@ -325,7 +334,15 @@ jobs:
             > SHA256SUMS
           sha256sum --check SHA256SUMS
 
-      - name: Publish the GitHub release
+      - name: Verify beta release channel
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python3 test/check-beta-release.py "$RELEASE_TAG"
+          git fetch origin beta-release/1.4.0
+          git merge-base --is-ancestor HEAD origin/beta-release/1.4.0
+
+      - name: Publish the GitHub beta prerelease
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -335,6 +352,7 @@ jobs:
             release-assets/ghostty2-linux-aarch64.flatpak \
             release-assets/SHA256SUMS \
             --verify-tag \
-            --latest \
+            --prerelease \
+            --latest=false \
             --title "Ghostty² $GITHUB_REF_NAME" \
             --notes-file RELEASE_NOTES.md

@@ -1,0 +1,74 @@
+{
+  "upstream": "83fb95624b0439ee660c2679b43b38c8b63769cd",
+  "baseline": "v1.3.2+ghostty2.3",
+  "candidate_commit": null,
+  "promotion_allowed": false,
+  "checks": [
+    {
+      "id": "linux_builds",
+      "scope": "Wayland, X11, Nix and both Flatpak architectures",
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "macos_builds",
+      "scope": "Swift suite, Zig suite and universal app bundle",
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "core_regressions",
+      "scope": "Full core suite and libghostty-vt suite",
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "configuration",
+      "scope": "Existing config, themes and upstream/fork isolation",
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "quick_terminal_tabs",
+      "scope": "Create, switch, reorder, rename, color, split and transfer tabs",
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "background_sessions",
+      "scope": "Process exit, clipboard prompts and focus on inactive tabs",
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "close_confirmation",
+      "scope": "Cancel/accept close and quit with hidden and background running sessions",
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "restoration",
+      "scope": "Restore v1/v2/v3 saved state, selected tab, focused split and screen placement",
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "desktop_behavior",
+      "scope": "Hotkey, fullscreen, multiple monitors, hide/show, Wayland supported compositor",
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "install_upgrade_rollback",
+      "scope": "Install beta, upgrade prior stable and roll back with config/state backup",
+      "status": "pending",
+      "evidence": null
+    },
+    {
+      "id": "performance",
+      "scope": "Compare launch, tab switching, rendering and idle resource use with prior stable",
+      "status": "pending",
+      "evidence": null
+    }
+  ]
+}

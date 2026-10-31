@@ -5,7 +5,9 @@ import SwiftUI
 class QuickTerminalTabManager: ObservableObject {
 
     /// All currently open tabs
-    @Published private(set) var tabs: [QuickTerminalTab] = []
+    @Published private(set) var tabs: [QuickTerminalTab] = [] {
+        didSet { controller?.syncOwnedSurfaces() }
+    }
 
     /// The current tab in focus
     @Published private(set) var currentTab: QuickTerminalTab? {
@@ -22,6 +24,7 @@ class QuickTerminalTabManager: ObservableObject {
 
             DispatchQueue.main.async {
                 // Find the focused surface, or fallback to the first surface (for new tabs)
+                guard self.currentTab === currentTab else { return }
                 let surfaceToFocus = currentTab.focusedSurface
 
                 if let surface = surfaceToFocus {
@@ -76,6 +79,7 @@ class QuickTerminalTabManager: ObservableObject {
 
     init(controller: QuickTerminalController, restorationState: QuickTerminalRestorableState? = nil) {
         self.controller = controller
+        controller.initializedTabManager = self
 
         // Check if restoration is enabled
         let shouldRestore = controller.ghostty.config.windowSaveState != "never"
@@ -404,7 +408,7 @@ class QuickTerminalTabManager: ObservableObject {
 
     // MARK: - Notifications
 
-    /// BaseTerminalController only owns the selected tab's surface tree. Handle
+    /// The base close handler mutates only the selected tab's tree. Handle
     /// process exits and close actions for retained background tab trees here.
     @objc func onCloseSurface(_ notification: Notification) {
         guard let target = notification.object as? Ghostty.SurfaceView else { return }
@@ -437,6 +441,7 @@ class QuickTerminalTabManager: ObservableObject {
 
             tab.surfaceTree = newTree
             tab.updateFocusedSurface(result.focused)
+            self.controller?.syncOwnedSurfaces()
         }
 
         let processAlive = (notification.userInfo?["process_alive"] as? Bool) ?? false

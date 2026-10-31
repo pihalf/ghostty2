@@ -38,9 +38,10 @@ modules:
       append-path: /app/zig
     build-commands:
       - zig build
-        -Doptimize=Debug
+        -Doptimize=debug
         -Dcpu=baseline
         -Dflatpak=true
+        -Dinstalled-exe-path=/app/bin/ghostty2
         -Dstrip=false
         -fno-sys=oniguruma
         --prefix /app

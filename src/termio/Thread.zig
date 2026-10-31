@@ -14,7 +14,8 @@ pub const Thread = @This();
 const std = @import("std");
 const ArenaAllocator = std.heap.ArenaAllocator;
 const builtin = @import("builtin");
-const xev = @import("../global.zig").xev;
+const global = @import("../global.zig");
+const xev = global.xev;
 const internal_os = @import("../os/main.zig");
 const termio = @import("../termio.zig");
 const renderer = @import("../renderer.zig");
@@ -146,8 +147,8 @@ pub fn threadMain(self: *Thread, io: *termio.Termio) void {
         // the error to the surface thread and let the apprt deal with it
         // in some way but this works for now. Without this, the user would
         // just see a blank terminal window.
-        io.renderer_state.mutex.lock();
-        defer io.renderer_state.mutex.unlock();
+        io.renderer_state.mutex.lockUncancelable(global.io());
+        defer io.renderer_state.mutex.unlock(global.io());
         const t = io.renderer_state.terminal;
 
         // Hide the cursor
@@ -198,8 +199,7 @@ pub fn threadMain(self: *Thread, io: *termio.Termio) void {
             },
 
             else => {
-                const str = std.fmt.allocPrint(
-                    alloc,
+                const str = alloc.print(
                     \\error starting IO thread: {}
                     \\
                     \\The underlying shell or command was unable to be started.
@@ -238,7 +238,7 @@ fn threadMain_(self: *Thread, io: *termio.Termio) !void {
     // Right now, on Darwin, `std.Thread.setName` can only name the current
     // thread, and we have no way to get the current thread from within it,
     // so instead we use this code to name the thread instead.
-    if (builtin.os.tag.isDarwin()) {
+    if (builtin.target.os.tag.isDarwin()) {
         internal_os.macos.pthread_setname_np(&"io".*);
     }
 
@@ -289,7 +289,7 @@ fn drainMailbox(
 
     // If we're draining, we just drain the mailbox and return.
     if (self.flags.drain) {
-        while (mailbox.pop()) |_| {}
+        while (mailbox.pop(global.io())) |msg| msg.deinit();
         return;
     }
 
@@ -297,13 +297,18 @@ fn drainMailbox(
     // expectation is that all our message handlers will be non-blocking
     // ENOUGH to not mess up throughput on producers.
     var redraw: bool = false;
-    while (mailbox.pop()) |message| {
+    while (mailbox.pop(global.io())) |message| {
         // If we have a message we always redraw
         redraw = true;
 
         log.debug("mailbox message={s}", .{@tagName(message)});
         switch (message) {
             .color_scheme_report => |v| try io.colorSchemeReport(data, v.force),
+            .visibility_report => |v| try io.visibilityReport(
+                data,
+                v.visible,
+                v.force,
+            ),
             .crash => @panic("crash request, crashing intentionally"),
             .change_config => |config| {
                 defer config.alloc.destroy(config.ptr);
@@ -322,6 +327,14 @@ fn drainMailbox(
                 }
             },
             .jump_to_prompt => |v| try io.jumpToPrompt(v),
+            .kitty_clipboard_grant_read => |v| {
+                defer v.alloc.free(v.pw);
+                try io.kittyClipboardGrant(v.pw, .read);
+            },
+            .kitty_clipboard_grant_write => |v| {
+                defer v.alloc.free(v.pw);
+                try io.kittyClipboardGrant(v.pw, .write);
+            },
             .start_synchronized_output => self.startSynchronizedOutput(cb),
             .linefeed_mode => |v| self.flags.linefeed_mode = v,
             .focused => |v| try io.focusGained(data, v),

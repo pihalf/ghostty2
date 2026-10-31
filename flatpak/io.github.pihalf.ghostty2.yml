@@ -2,7 +2,7 @@ app-id: io.github.pihalf.ghostty2
 runtime: org.gnome.Platform
 runtime-version: "50"
 sdk: org.gnome.Sdk
-default-branch: stable
+default-branch: beta
 command: ghostty2
 finish-args:
   # 3D rendering
@@ -37,9 +37,10 @@ modules:
       append-path: /app/zig
     build-commands:
       - zig build
-        -Doptimize=ReleaseFast
+        -Doptimize=fast
         -Dcpu=baseline
         -Dflatpak=true
+        -Dinstalled-exe-path=/app/bin/ghostty2
         -Dstrip=false
         -fno-sys=oniguruma
         --prefix /app

@@ -43,6 +43,16 @@ class QuickTerminalController: BaseTerminalController {
     /// initializer while restoration installs its first surface tree.
     weak var activeQuickTerminalTab: QuickTerminalTab?
 
+    /// Set before the manager restores tabs, without re-entering its lazy initializer.
+    weak var initializedTabManager: QuickTerminalTabManager?
+
+    override var surfacesForOwnership: [Ghostty.SurfaceView] {
+        guard let manager = initializedTabManager else { return Array(surfaceTree) }
+        return manager.tabs.flatMap { tab in
+            Array(tab === activeQuickTerminalTab ? surfaceTree : tab.surfaceTree)
+        }
+    }
+
     // The tab manager for the quick terminal
     private(set) lazy var tabManager: QuickTerminalTabManager = {
         let manager = QuickTerminalTabManager(controller: self, restorationState: self.restorationState)
@@ -234,8 +244,6 @@ class QuickTerminalController: BaseTerminalController {
         // applies if we can be seen.
         guard visible else { return }
 
-        terminalViewContainer?.updateGlassTintOverlay(isKeyWindow: true)
-
         // Re-hide the dock if we were hiding it before.
         hiddenDock?.hide()
     }
@@ -248,8 +256,6 @@ class QuickTerminalController: BaseTerminalController {
         // windowDidResignKey will also get called after animateOut so this
         // ensures we don't run logic twice.
         guard visible else { return }
-
-        terminalViewContainer?.updateGlassTintOverlay(isKeyWindow: false)
 
         // We don't animate out if there is a modal sheet being shown currently.
         // This lets us show alerts without causing the window to disappear.
@@ -338,6 +344,10 @@ class QuickTerminalController: BaseTerminalController {
     // MARK: Base Controller Overrides
 
     override func focusSurface(_ view: Ghostty.SurfaceView) {
+        if !surfaceTree.contains(view),
+           let tab = tabManager.tabs.first(where: { $0.surfaceTree.contains(view) }) {
+            tabManager.selectTab(tab)
+        }
         if visible {
             // If we're visible, we just focus the surface as normal.
             super.focusSurface(view)
@@ -354,11 +364,10 @@ class QuickTerminalController: BaseTerminalController {
     }
 
     override func surfaceTreeDidChange(from: SplitTree<Ghostty.SurfaceView>, to: SplitTree<Ghostty.SurfaceView>) {
-        super.surfaceTreeDidChange(from: from, to: to)
-
-        // Keep the selected tab authoritative after every split mutation. Close
-        // confirmation and tab transfers read the tab's retained tree directly.
+        // Update the retained tree before reconciling ownership in the base
+        // controller, so real split closes are distinguished from tab switches.
         activeQuickTerminalTab?.surfaceTree = to
+        super.surfaceTreeDidChange(from: from, to: to)
 
         // Base only synchronizes the newly selected tree. Explicitly occlude
         // surfaces retained by background tabs so they stop rendering.
@@ -387,6 +396,14 @@ class QuickTerminalController: BaseTerminalController {
 
         // Update the current tab's title subscription to track the newly focused surface
         activeQuickTerminalTab?.updateFocusedSurfaceIfOwned(to)
+    }
+
+    override func closeSurface(_ view: Ghostty.SurfaceView, withConfirmation: Bool = true) {
+        if !surfaceTree.contains(view),
+           let tab = tabManager.tabs.first(where: { $0.surfaceTree.contains(view) }) {
+            tabManager.selectTab(tab)
+        }
+        super.closeSurface(view, withConfirmation: withConfirmation)
     }
 
     override func closeSurface(
@@ -779,6 +796,16 @@ class QuickTerminalController: BaseTerminalController {
         }
 
         terminalViewContainer?.ghosttyConfigDidChange(ghostty.config, preferredBackgroundColor: nil)
+    }
+
+    override func confirmCloseAsync(messageText: String, informativeText: String, confirmButtonTitle: String = "Close") async -> NSApplication.ModalResponse? {
+
+        let waitTime = visible ? 0 : 0.25
+        animateIn()
+
+        try? await Task.sleep(for: .seconds(waitTime))
+
+        return await super.confirmCloseAsync(messageText: messageText, informativeText: informativeText, confirmButtonTitle: confirmButtonTitle)
     }
 
     // MARK: First Responder

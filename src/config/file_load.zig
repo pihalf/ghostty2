@@ -3,6 +3,7 @@ const builtin = @import("builtin");
 const assert = @import("../quirks.zig").inlineAssert;
 const Allocator = std.mem.Allocator;
 const internal_os = @import("../os/main.zig");
+const global = @import("../global.zig");
 
 const log = std.log.scoped(.config);
 
@@ -13,8 +14,12 @@ pub const xdg_config_dir = "ghostty2";
 pub fn defaultXdgPath(alloc: Allocator) ![]const u8 {
     const subdir = try std.fs.path.join(alloc, &.{ xdg_config_dir, "config.ghostty" });
     defer alloc.free(subdir);
+    var environ_map = try global.environMap();
+    defer environ_map.deinit();
     return try internal_os.xdg.config(
+        global.io(),
         alloc,
+        &environ_map,
         .{ .subdir = subdir },
     );
 }
@@ -24,8 +29,12 @@ pub fn defaultXdgPath(alloc: Allocator) ![]const u8 {
 pub fn legacyDefaultXdgPath(alloc: Allocator) ![]const u8 {
     const subdir = try std.fs.path.join(alloc, &.{ xdg_config_dir, "config" });
     defer alloc.free(subdir);
+    var environ_map = try global.environMap();
+    defer environ_map.deinit();
     return try internal_os.xdg.config(
+        global.io(),
         alloc,
+        &environ_map,
         .{ .subdir = subdir },
     );
 }
@@ -35,16 +44,16 @@ pub fn legacyDefaultXdgPath(alloc: Allocator) ![]const u8 {
 pub fn preferredXdgPath(alloc: Allocator) ![]const u8 {
     // If the XDG path exists, use that.
     const xdg_path = try defaultXdgPath(alloc);
-    if (open(xdg_path)) |f| {
-        f.close();
+    if (open(global.io(), xdg_path)) |f| {
+        f.close(global.io());
         return xdg_path;
     } else |_| {}
 
     // Try the legacy path
     errdefer alloc.free(xdg_path);
     const legacy_xdg_path = try legacyDefaultXdgPath(alloc);
-    if (open(legacy_xdg_path)) |f| {
-        f.close();
+    if (open(global.io(), legacy_xdg_path)) |f| {
+        f.close(global.io());
         alloc.free(xdg_path);
         return legacy_xdg_path;
     } else |_| {}
@@ -72,16 +81,16 @@ pub fn legacyDefaultAppSupportPath(alloc: Allocator) ![]const u8 {
 pub fn preferredAppSupportPath(alloc: Allocator) ![]const u8 {
     // If the app support path exists, use that.
     const app_support_path = try defaultAppSupportPath(alloc);
-    if (open(app_support_path)) |f| {
-        f.close();
+    if (open(global.io(), app_support_path)) |f| {
+        f.close(global.io());
         return app_support_path;
     } else |_| {}
 
     // Try the legacy path
     errdefer alloc.free(app_support_path);
     const legacy_app_support_path = try legacyDefaultAppSupportPath(alloc);
-    if (open(legacy_app_support_path)) |f| {
-        f.close();
+    if (open(global.io(), legacy_app_support_path)) |f| {
+        f.close(global.io());
         alloc.free(app_support_path);
         return legacy_app_support_path;
     } else |_| {}
@@ -100,24 +109,24 @@ pub fn preferredAppSupportPath(alloc: Allocator) ![]const u8 {
 ///
 /// The returned value must be freed by the caller.
 pub fn preferredDefaultFilePath(alloc: Allocator) ![]const u8 {
-    switch (builtin.os.tag) {
+    switch (builtin.target.os.tag) {
         .macos => {
             // macOS prefers the Application Support directory
             // if it exists.
             const app_support_path = try preferredAppSupportPath(alloc);
-            const app_support_file = open(app_support_path) catch {
+            const app_support_file = open(global.io(), app_support_path) catch {
                 // Try the XDG path if it exists
                 const xdg_path = try preferredXdgPath(alloc);
-                const xdg_file = open(xdg_path) catch {
+                const xdg_file = open(global.io(), xdg_path) catch {
                     // If neither file exists, use app support
                     alloc.free(xdg_path);
                     return app_support_path;
                 };
-                xdg_file.close();
+                xdg_file.close(global.io());
                 alloc.free(app_support_path);
                 return xdg_path;
             };
-            app_support_file.close();
+            app_support_file.close(global.io());
             return app_support_path;
         },
 
@@ -136,10 +145,11 @@ const OpenFileError = error{
 /// Opens the file at the given path and returns the file handle
 /// if it exists and is non-empty. This also constrains the possible
 /// errors to a smaller set that we can explicitly handle.
-pub fn open(path: []const u8) OpenFileError!std.fs.File {
+pub fn open(io: std.Io, path: []const u8) OpenFileError!std.Io.File {
     assert(std.fs.path.isAbsolute(path));
 
-    var file = std.fs.openFileAbsolute(
+    var file = std.Io.Dir.openFileAbsolute(
+        io,
         path,
         .{},
     ) catch |err| switch (err) {
@@ -152,9 +162,9 @@ pub fn open(path: []const u8) OpenFileError!std.fs.File {
             return OpenFileError.FileOpenFailed;
         },
     };
-    errdefer file.close();
+    errdefer file.close(io);
 
-    const stat = file.stat() catch |err| {
+    const stat = file.stat(io) catch |err| {
         log.warn("error getting file stat path={s} err={}", .{
             path,
             err,
@@ -196,7 +206,7 @@ test "Ghostty2 uses an isolated XDG configuration directory" {
 }
 
 test "Ghostty2 uses an isolated macOS Application Support directory" {
-    if (comptime builtin.os.tag != .macos) return error.SkipZigTest;
+    if (comptime builtin.target.os.tag != .macos) return error.SkipZigTest;
 
     const testing = std.testing;
     const alloc = testing.allocator;

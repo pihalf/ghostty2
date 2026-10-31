@@ -1,26 +1,17 @@
-# Ghostty²
+# Ghostty² 1.4.0 beta 1
 
-Ghostty² now uses its own configuration namespace instead of reading Ghostty's
-configuration. Existing Ghostty files are never changed. During first setup,
-the installer offers to copy detected Ghostty settings; declining starts with
-Ghostty²'s built-in defaults. The app icon now uses a high-contrast corner
-badge so its 2 remains legible at Dock and launcher sizes.
+This is a testing prerelease integrating upstream Ghostty v1.4.0. The previous
+stable release remains v1.3.2+ghostty2.3. Do not promote this beta until the
+end-to-end comparison recorded in test/beta-acceptance.json is complete.
 
-Ghostty² combines Ghostty's fast, native terminal with the two iTerm2 workflows this fork is built around:
+- Retains macOS quick-terminal tabs and the default global hotkey.
+- Retains isolated Ghostty² configuration, branding and installer behavior.
+- Adapts retained tabs to upstream surface ownership and clipboard handling.
+- Updates to Zig 0.17, GTK 4.18+ and libadwaita 1.7+.
+- Keeps bundled crash capture and automatic updating removed.
 
-- A global Quake-style terminal, enabled by default with <kbd>Control</kbd>+<kbd>`</kbd>.
-- Multiple persistent tabs in the quick terminal: **Command+T** on macOS and **Control+Shift+T** on Linux.
-- Independent Ghostty² configuration, with optional import during installation.
-- A high-contrast Ghostty² icon badge that remains readable at small sizes.
-- The local crash-capture dependencies and bundled macOS updater are omitted; “Check for Updates…” opens this fork's Releases page.
-- A universal macOS app plus x86_64 and aarch64 Linux Flatpak bundles, all covered by `SHA256SUMS`.
-
-Install the latest release:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/pihalf/ghostty2/main/install.sh | sh
-```
-
-The macOS app is ad-hoc signed. When it is downloaded through a browser, use **Open** from Finder's context menu on first launch if Gatekeeper asks for confirmation.
-
-The Linux quick terminal requires Wayland and a compositor that supports layer shell. Normal windows and tabs work on X11, but the drop-down terminal does not. See the [README](https://github.com/pihalf/ghostty2#readme) for details.
+Beta testing must include existing saved sessions, background processes,
+clipboard prompts, close confirmation, tab transfers and supported Wayland
+compositors. Back up configuration and saved application state before testing
+an upgrade or rollback. Beta and stable builds use the same Ghostty² app ID;
+the beta is not a separate application namespace.
