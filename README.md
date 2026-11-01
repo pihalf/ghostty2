@@ -38,6 +38,30 @@ Wayland desktop checks. Passing compilation alone does not satisfy this gate.
 Stable publication requires a separate promotion change after that review;
 this branch's workflow can publish only beta tags.
 
+For native acceptance, compare the stable and beta packages on the same
+machine, using a disposable account or backed-up application profile. They
+share an app ID and configuration/state locations. Record the candidate
+commit, OS, compositor and GPU with each result in the acceptance tracker.
+
+The remaining desktop comparison must cover:
+
+- Existing configuration, custom themes, fonts and configured key bindings.
+- Quick-terminal tabs and splits: create, switch, reorder, rename, color and
+  transfer between quick and normal windows where supported.
+- Background process exits and clipboard prompts, including requests made
+  while another tab is active. Check both the target session and keyboard focus.
+- Cancel and accept close/quit with active, background and hidden sessions.
+- Restore a previous release's saved state, selected tab, focused split and
+  screen placement; verify upgrade and rollback against a profile backup.
+- Global shortcuts, hide/show, fullscreen, multiple monitors and different
+  display scales on macOS and supported Wayland desktops.
+- Comparable release-build launch, rendering, scrolling, tab switching and
+  idle resource use. Headless software-rendering checks do not establish GPU
+  performance parity.
+
+Passing CI is necessary for promotion, but does not complete these native
+desktop checks. Keep `promotion_allowed` false while any check is incomplete.
+
 ## Install
 
 Install the latest binary release:
@@ -72,11 +96,11 @@ The result is `zig-out/bin/ghostty2` on Linux and `zig-out/Ghostty2.app` on macO
 
 ## Platform support
 
-| Platform | App | Quake terminal | Global shortcut | Quick-terminal tabs |
-| --- | --- | --- | --- | --- |
-| macOS 13+ | Native SwiftUI/Metal | Yes | Native global key monitor | <kbd>Command</kbd>+<kbd>T</kbd> |
-| Linux Wayland | Native GTK/OpenGL | On supported compositors | XDG GlobalShortcuts portal or compositor binding | <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> |
-| Linux X11 | Native GTK/OpenGL | Not currently supported | Compositor/window-manager binding only | Normal window tabs work |
+| Platform      | App                  | Quake terminal           | Global shortcut                                  | Quick-terminal tabs                              |
+| ------------- | -------------------- | ------------------------ | ------------------------------------------------ | ------------------------------------------------ |
+| macOS 13+     | Native SwiftUI/Metal | Yes                      | Native global key monitor                        | <kbd>Command</kbd>+<kbd>T</kbd>                  |
+| Linux Wayland | Native GTK/OpenGL    | On supported compositors | XDG GlobalShortcuts portal or compositor binding | <kbd>Control</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> |
+| Linux X11     | Native GTK/OpenGL    | Not currently supported  | Compositor/window-manager binding only           | Normal window tabs work                          |
 
 On Linux, the drop-down placement requires a compositor with the layer-shell protocol. KDE Plasma Wayland and wlroots-based compositors are the intended targets. GNOME's compositor and X11 do not provide the required layer-shell behavior. If your desktop does not expose the global-shortcut portal, bind this command in the compositor instead:
 

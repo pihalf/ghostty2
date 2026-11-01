@@ -1,0 +1,95 @@
+{
+  "recorded_at": "2026-11-01T00:51:06.931164+00:00",
+  "source_commit": "18e595f7ef14a7a99c73d5fb748ee40774dd2d66",
+  "build": "Native Linux Debug, Nix GTK, headless Sway, software OpenGL",
+  "before_fix": {
+    "passed": false,
+    "failure": "After an inactive split exited, neither remaining PTY received keyboard input. The background tree attempted to focus its unmapped surface."
+  },
+  "after_fix": {
+    "passed": true,
+    "checks": [
+      "Wayland layer-shell quick terminal",
+      "create two tabs and a split",
+      "type into each PTY",
+      "hide/show preserves all three processes",
+      "switch back to first tab",
+      "background split exit preserves focus and the other split",
+      "closing first process preserves second tab"
+    ],
+    "first_input": "first-input\nafter-hide-show\nafter-background-exit\nexit\n",
+    "second_input": "second-input\nsurviving-tab\nexit\n",
+    "split_input": "split-input\n"
+  },
+  "close_confirmation": {
+    "passed": true,
+    "checks": [
+      "Wayland layer-shell quick terminal",
+      "create two tabs and a split",
+      "type into each PTY",
+      "hide/show preserves all three processes",
+      "switch back to first tab",
+      "background split exit preserves focus and the other split",
+      "cancel close preserves the session",
+      "confirm close terminates only the chosen tab"
+    ],
+    "first_input": "first-input\nafter-hide-show\nafter-background-exit\nafter-close-cancel\n",
+    "second_input": "second-input\nsurviving-tab\nexit\n",
+    "split_input": "split-input\n"
+  },
+  "source_files": {
+    "src/apprt/gtk/class/split_tree.zig": "23c1620693afdfadb34e06aa6cf4028cb9260b44458f6a0b567f7383359d9be0",
+    "test/smoke-wayland.py": "7f3011b4b571b2f145af9717b6dedaeaaa2c073723c6df71a09c69ad9ec9f315"
+  },
+  "limitations": [
+    "Native macOS UI, GPU performance, real monitor placement and hidden-window quit confirmation are not covered."
+  ],
+  "stable_close_confirmation": {
+    "passed": true,
+    "checks": [
+      "Wayland layer-shell quick terminal",
+      "create two tabs and a split",
+      "type into each PTY",
+      "hide/show preserves all three processes",
+      "switch back to first tab",
+      "background split exit preserves focus and the other split",
+      "cancel close preserves the session",
+      "confirm close terminates only the chosen tab"
+    ],
+    "first_input": "first-input\nafter-hide-show\nafter-background-exit\nafter-close-cancel\n",
+    "second_input": "second-input\nsurviving-tab\nexit\n",
+    "split_input": "split-input\n"
+  },
+  "ci_run": "https://github.com/pihalf/ghostty2/actions/runs/41256397550",
+  "ci": {
+    "passed": true,
+    "checks": [
+      "Wayland layer-shell quick terminal",
+      "create two tabs and a split",
+      "type into each PTY",
+      "hide/show preserves all three processes",
+      "switch back to first tab",
+      "background split exit preserves focus and the other split",
+      "closing first process preserves second tab"
+    ],
+    "first_input": "first-input\nafter-hide-show\nafter-background-exit\nexit\n",
+    "second_input": "second-input\nsurviving-tab\nexit\n",
+    "split_input": "split-input\n"
+  },
+  "packaged_beta": {
+    "passed": true,
+    "checks": [
+      "Wayland layer-shell quick terminal",
+      "create two tabs and a split",
+      "type into each PTY",
+      "hide/show preserves all three processes",
+      "switch back to first tab",
+      "background split exit preserves focus and the other split",
+      "cancel close preserves the session",
+      "confirm close terminates only the chosen tab"
+    ],
+    "first_input": "first-input\nafter-hide-show\nafter-background-exit\nafter-close-cancel\n",
+    "second_input": "second-input\nsurviving-tab\nexit\n",
+    "split_input": "split-input\n"
+  }
+}

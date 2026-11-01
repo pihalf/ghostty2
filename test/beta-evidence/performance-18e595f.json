@@ -1,0 +1,771 @@
+{
+  "recorded_at": "2026-11-01T00:51:06.931164+00:00",
+  "candidate_commit": "18e595f7ef14a7a99c73d5fb748ee40774dd2d66",
+  "baseline": "v1.3.2+ghostty2.3",
+  "environment": {
+    "os": "Ubuntu 24.04.5 LTS",
+    "kernel": "7.0.0-38-generic",
+    "cpu": "AMD Ryzen Threadripper PRO 7965WX 24-Cores",
+    "display": "Xvfb 1280x800x24, 96 DPI",
+    "rendering": "Software OpenGL via the same installed Flatpak runtime"
+  },
+  "paired_five_run_comparison": {
+    "recorded_at": "2026-11-01T00:42:34.113449+00:00",
+    "samples": {
+      "stable": [
+        {
+          "pty_ready_ms": 1383.8433070341125,
+          "idle_cpu_percent_one_core": 3.974008592765578,
+          "idle_rss_mib": 241.515625,
+          "stat_rss_mib": 233.5546875,
+          "memory_rollup_kib": {
+            "Rss": 247312,
+            "Pss": 245803,
+            "Pss_Dirty": 142988,
+            "Pss_Anon": 140888,
+            "Pss_File": 102927,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2036,
+            "Shared_Dirty": 64,
+            "Private_Clean": 102256,
+            "Private_Dirty": 142956,
+            "Referenced": 247312,
+            "Anonymous": 140888,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 120036],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            ["[anonymous]", 15220],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12132
+            ],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/app/bin/ghostty2", 7712],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.3.2+ghostty2.3"
+        },
+        {
+          "pty_ready_ms": 1403.4619899466634,
+          "idle_cpu_percent_one_core": 3.973376480276451,
+          "idle_rss_mib": 239.9375,
+          "stat_rss_mib": 230.4609375,
+          "memory_rollup_kib": {
+            "Rss": 245696,
+            "Pss": 244131,
+            "Pss_Dirty": 141092,
+            "Pss_Anon": 138992,
+            "Pss_File": 103151,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2148,
+            "Shared_Dirty": 64,
+            "Private_Clean": 102424,
+            "Private_Dirty": 141060,
+            "Referenced": 245696,
+            "Anonymous": 138992,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 119800],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            ["[anonymous]", 13560],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12132
+            ],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/app/bin/ghostty2", 7776],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.3.2+ghostty2.3"
+        },
+        {
+          "pty_ready_ms": 1445.9835330490023,
+          "idle_cpu_percent_one_core": 4.468006810521773,
+          "idle_rss_mib": 240.51953125,
+          "stat_rss_mib": 230.82421875,
+          "memory_rollup_kib": {
+            "Rss": 246292,
+            "Pss": 244695,
+            "Pss_Dirty": 141580,
+            "Pss_Anon": 139480,
+            "Pss_File": 103227,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2212,
+            "Shared_Dirty": 64,
+            "Private_Clean": 102468,
+            "Private_Dirty": 141548,
+            "Referenced": 246292,
+            "Anonymous": 139480,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 120340],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            ["[anonymous]", 13508],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12132
+            ],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/app/bin/ghostty2", 7904],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.3.2+ghostty2.3"
+        },
+        {
+          "pty_ready_ms": 1393.8165860017762,
+          "idle_cpu_percent_one_core": 3.973183466986568,
+          "idle_rss_mib": 240.515625,
+          "stat_rss_mib": 231.94921875,
+          "memory_rollup_kib": {
+            "Rss": 246288,
+            "Pss": 244663,
+            "Pss_Dirty": 141300,
+            "Pss_Anon": 139200,
+            "Pss_File": 103475,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2268,
+            "Shared_Dirty": 64,
+            "Private_Clean": 102688,
+            "Private_Dirty": 141268,
+            "Referenced": 246288,
+            "Anonymous": 139200,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 120060],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            ["[anonymous]", 13508],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12132
+            ],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/app/bin/ghostty2", 8160],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.3.2+ghostty2.3"
+        },
+        {
+          "pty_ready_ms": 1384.1995149850845,
+          "idle_cpu_percent_one_core": 3.973446107207264,
+          "idle_rss_mib": 241.69921875,
+          "stat_rss_mib": 234.21484375,
+          "memory_rollup_kib": {
+            "Rss": 247500,
+            "Pss": 245927,
+            "Pss_Dirty": 143160,
+            "Pss_Anon": 141060,
+            "Pss_File": 102879,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2164,
+            "Shared_Dirty": 64,
+            "Private_Clean": 102144,
+            "Private_Dirty": 143128,
+            "Referenced": 247500,
+            "Anonymous": 141060,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 120164],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            ["[anonymous]", 15268],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12132
+            ],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/app/bin/ghostty2", 7712],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.3.2+ghostty2.3"
+        }
+      ],
+      "beta": [
+        {
+          "pty_ready_ms": 1405.0053339451551,
+          "idle_cpu_percent_one_core": 3.974159606969938,
+          "idle_rss_mib": 297.2578125,
+          "stat_rss_mib": 288.15625,
+          "memory_rollup_kib": {
+            "Rss": 304392,
+            "Pss": 302775,
+            "Pss_Dirty": 199792,
+            "Pss_Anon": 197692,
+            "Pss_File": 103095,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2252,
+            "Shared_Dirty": 64,
+            "Private_Clean": 102316,
+            "Private_Dirty": 199760,
+            "Referenced": 304392,
+            "Anonymous": 197692,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 115132],
+            ["[anonymous]", 76956],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12196
+            ],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/app/bin/ghostty2", 8260],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.4.0-beta.1+18e595f"
+        },
+        {
+          "pty_ready_ms": 1392.8453919943422,
+          "idle_cpu_percent_one_core": 4.469871028746825,
+          "idle_rss_mib": 296.14453125,
+          "stat_rss_mib": 288.0703125,
+          "memory_rollup_kib": {
+            "Rss": 303252,
+            "Pss": 301655,
+            "Pss_Dirty": 198844,
+            "Pss_Anon": 196744,
+            "Pss_File": 102923,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2212,
+            "Shared_Dirty": 64,
+            "Private_Clean": 102164,
+            "Private_Dirty": 198812,
+            "Referenced": 303252,
+            "Anonymous": 196744,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 115476],
+            ["[anonymous]", 75668],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12196
+            ],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/app/bin/ghostty2", 8068],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.4.0-beta.1+18e595f"
+        },
+        {
+          "pty_ready_ms": 1404.6527940081432,
+          "idle_cpu_percent_one_core": 4.470365389119064,
+          "idle_rss_mib": 297.6171875,
+          "stat_rss_mib": 289.14453125,
+          "memory_rollup_kib": {
+            "Rss": 304760,
+            "Pss": 303075,
+            "Pss_Dirty": 200088,
+            "Pss_Anon": 197988,
+            "Pss_File": 103099,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2388,
+            "Shared_Dirty": 64,
+            "Private_Clean": 102252,
+            "Private_Dirty": 200056,
+            "Referenced": 304760,
+            "Anonymous": 197988,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 115524],
+            ["[anonymous]", 76864],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12196
+            ],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/app/bin/ghostty2", 8196],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.4.0-beta.1+18e595f"
+        },
+        {
+          "pty_ready_ms": 1413.9035950647667,
+          "idle_cpu_percent_one_core": 4.469796055116242,
+          "idle_rss_mib": 295.9453125,
+          "stat_rss_mib": 288.30078125,
+          "memory_rollup_kib": {
+            "Rss": 303048,
+            "Pss": 301487,
+            "Pss_Dirty": 197760,
+            "Pss_Anon": 195660,
+            "Pss_File": 103839,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2140,
+            "Shared_Dirty": 64,
+            "Private_Clean": 103116,
+            "Private_Dirty": 197728,
+            "Referenced": 303048,
+            "Anonymous": 195660,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 113840],
+            ["[anonymous]", 76220],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12196
+            ],
+            ["/app/bin/ghostty2", 9128],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.4.0-beta.1+18e595f"
+        },
+        {
+          "pty_ready_ms": 1395.7374319434166,
+          "idle_cpu_percent_one_core": 3.973577618177046,
+          "idle_rss_mib": 297.03125,
+          "stat_rss_mib": 289.0390625,
+          "memory_rollup_kib": {
+            "Rss": 304160,
+            "Pss": 302539,
+            "Pss_Dirty": 199576,
+            "Pss_Anon": 197476,
+            "Pss_File": 103075,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2260,
+            "Shared_Dirty": 64,
+            "Private_Clean": 102292,
+            "Private_Dirty": 199544,
+            "Referenced": 304160,
+            "Anonymous": 197476,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 115628],
+            ["[anonymous]", 76248],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12196
+            ],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/app/bin/ghostty2", 8196],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.4.0-beta.1+18e595f"
+        }
+      ]
+    },
+    "medians": {
+      "stable": {
+        "pty_ready_ms": 1393.8165860017762,
+        "idle_cpu_percent_one_core": 3.973446107207264,
+        "idle_rss_mib": 240.51953125
+      },
+      "beta": {
+        "pty_ready_ms": 1404.6527940081432,
+        "idle_cpu_percent_one_core": 4.469796055116242,
+        "idle_rss_mib": 297.03125
+      }
+    },
+    "conditions": "ReleaseFast Flatpaks on the same host and runtime; alternating order; private fresh profiles, Xvfb and D-Bus per sample; software OpenGL. Startup ends when the child PTY command reports ready. Idle measured for two seconds after one second settling.",
+    "limitations": [
+      "Not a GPU, frame latency or tab switching benchmark.",
+      "Cold profile launch includes Flatpak and host-spawn helper startup.",
+      "Short idle CPU samples are noisy; these measurements alone cannot establish native desktop performance parity."
+    ]
+  },
+  "after_30_seconds": {
+    "recorded_at": "2026-11-01T00:44:14.792778+00:00",
+    "samples": {
+      "stable": [
+        {
+          "pty_ready_ms": 1425.0567429699004,
+          "idle_cpu_percent_one_core": 5.584963700601732,
+          "idle_rss_mib": 239.53125,
+          "stat_rss_mib": 231.1171875,
+          "memory_rollup_kib": {
+            "Rss": 245280,
+            "Pss": 243683,
+            "Pss_Dirty": 140752,
+            "Pss_Anon": 138728,
+            "Pss_File": 102967,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2212,
+            "Shared_Dirty": 64,
+            "Private_Clean": 102284,
+            "Private_Dirty": 140720,
+            "Referenced": 245280,
+            "Anonymous": 138728,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 120116],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            ["[anonymous]", 12980],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12132
+            ],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/app/bin/ghostty2", 7776],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.3.2+ghostty2.3"
+        }
+      ],
+      "beta": [
+        {
+          "pty_ready_ms": 1464.5741210551932,
+          "idle_cpu_percent_one_core": 5.583809298198907,
+          "idle_rss_mib": 282.796875,
+          "stat_rss_mib": 276.625,
+          "memory_rollup_kib": {
+            "Rss": 289584,
+            "Pss": 288023,
+            "Pss_Dirty": 184104,
+            "Pss_Anon": 182080,
+            "Pss_File": 103955,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2140,
+            "Shared_Dirty": 64,
+            "Private_Clean": 103308,
+            "Private_Dirty": 184072,
+            "Referenced": 289584,
+            "Anonymous": 182080,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 111996],
+            ["[anonymous]", 64484],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12196
+            ],
+            ["/app/bin/ghostty2", 9128],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.4.0-beta.1+18e595f"
+        }
+      ]
+    },
+    "medians": {
+      "stable": {
+        "pty_ready_ms": 1425.0567429699004,
+        "idle_cpu_percent_one_core": 5.584963700601732,
+        "idle_rss_mib": 239.53125
+      },
+      "beta": {
+        "pty_ready_ms": 1464.5741210551932,
+        "idle_cpu_percent_one_core": 5.583809298198907,
+        "idle_rss_mib": 282.796875
+      }
+    },
+    "conditions": "ReleaseFast Flatpaks on the same host/runtime with fresh private profiles, Xvfb and D-Bus. One paired follow-up after 30 seconds settling and 5 seconds idle observation; RSS from smaps_rollup.",
+    "limitations": [
+      "Not a GPU, frame latency or tab switching benchmark.",
+      "Cold profile launch includes Flatpak and host-spawn helper startup.",
+      "Short idle CPU samples are noisy; these measurements alone cannot establish native desktop performance parity."
+    ]
+  },
+  "after_120_seconds": {
+    "recorded_at": "2026-11-01T00:50:02.604652+00:00",
+    "samples": {
+      "stable": [
+        {
+          "pty_ready_ms": 1414.9547830456868,
+          "idle_cpu_percent_one_core": 5.585318283764342,
+          "idle_rss_mib": 236.08203125,
+          "stat_rss_mib": 229.8125,
+          "memory_rollup_kib": {
+            "Rss": 241748,
+            "Pss": 240123,
+            "Pss_Dirty": 136776,
+            "Pss_Anon": 134740,
+            "Pss_File": 103395,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2268,
+            "Shared_Dirty": 64,
+            "Private_Clean": 102672,
+            "Private_Dirty": 136744,
+            "Referenced": 241748,
+            "Anonymous": 134740,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 120232],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12132
+            ],
+            ["[anonymous]", 8876],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/app/bin/ghostty2", 8160],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.3.2+ghostty2.3"
+        }
+      ],
+      "beta": [
+        {
+          "pty_ready_ms": 1394.1010399721563,
+          "idle_cpu_percent_one_core": 5.585647154577662,
+          "idle_rss_mib": 282.453125,
+          "stat_rss_mib": 278.59375,
+          "memory_rollup_kib": {
+            "Rss": 289232,
+            "Pss": 287659,
+            "Pss_Dirty": 183652,
+            "Pss_Anon": 181616,
+            "Pss_File": 104055,
+            "Pss_Shmem": 1988,
+            "Shared_Clean": 2164,
+            "Shared_Dirty": 64,
+            "Private_Clean": 103384,
+            "Private_Dirty": 183620,
+            "Referenced": 289232,
+            "Anonymous": 181616,
+            "KSM": 0,
+            "LazyFree": 0,
+            "AnonHugePages": 0,
+            "ShmemPmdMapped": 0,
+            "FilePmdMapped": 0,
+            "Shared_Hugetlb": 0,
+            "Private_Hugetlb": 0,
+            "Swap": 0,
+            "SwapPss": 0,
+            "Locked": 0
+          },
+          "largest_mappings_kib": [
+            ["[heap]", 115620],
+            ["[anonymous]", 60396],
+            ["/usr/lib/x86_64-linux-gnu/GL/default/lib/libLLVM.so.21.1", 44012],
+            [
+              "/usr/lib/x86_64-linux-gnu/GL/default/lib/libgallium-26.1.4.so",
+              12196
+            ],
+            ["/app/bin/ghostty2", 9232],
+            ["/usr/lib/x86_64-linux-gnu/libgtk-4.so.1.2200.4", 8348],
+            ["/SYSV00000000 (deleted)", 2020],
+            ["/usr/lib/x86_64-linux-gnu/libadwaita-1.so.0", 1900],
+            ["/usr/lib/x86_64-linux-gnu/libc.so.6", 1880],
+            ["/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8800.2", 1768],
+            ["/usr/lib/x86_64-linux-gnu/libcrypto.so.3", 1604],
+            ["/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.34", 1492]
+          ],
+          "version": "1.4.0-beta.1+18e595f"
+        }
+      ]
+    },
+    "medians": {
+      "stable": {
+        "pty_ready_ms": 1414.9547830456868,
+        "idle_cpu_percent_one_core": 5.585318283764342,
+        "idle_rss_mib": 236.08203125
+      },
+      "beta": {
+        "pty_ready_ms": 1394.1010399721563,
+        "idle_cpu_percent_one_core": 5.585647154577662,
+        "idle_rss_mib": 282.453125
+      }
+    },
+    "conditions": "ReleaseFast Flatpaks on the same host/runtime with fresh private profiles, Xvfb and D-Bus. One paired follow-up after 120 seconds settling and 5 seconds idle observation; RSS from smaps_rollup.",
+    "limitations": [
+      "Not a GPU, frame latency or tab switching benchmark.",
+      "Cold profile launch includes Flatpak and host-spawn helper startup.",
+      "Short idle CPU samples are noisy; these measurements alone cannot establish native desktop performance parity."
+    ]
+  },
+  "promotion_blocker": true,
+  "cause": "Unconfirmed. Additional private/anonymous memory is observed; mapped library memory is nearly unchanged.",
+  "next_checks": [
+    "Profile the allocation source and compare software rendering with real GPU rendering.",
+    "Validate native launch, scrolling, rendering and tab-switch latency on Linux and macOS before promotion."
+  ]
+}

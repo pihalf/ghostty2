@@ -1,0 +1,88 @@
+{
+  "recorded_at": "2026-11-01T00:51:06.931164+00:00",
+  "run": {
+    "conclusion": "success",
+    "created_at": "2026-11-01T00:21:32Z",
+    "head_sha": "18e595f7ef14a7a99c73d5fb748ee40774dd2d66",
+    "html_url": "https://github.com/pihalf/ghostty2/actions/runs/41256397550",
+    "id": 41256397550,
+    "status": "completed",
+    "updated_at": "2026-11-01T00:48:24Z"
+  },
+  "jobs": [
+    {
+      "conclusion": "success",
+      "id": 124700362167,
+      "name": "Removed dependencies and generated assets",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 124700745374,
+      "name": "Linux GTK builds and application smoke tests",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 124700745417,
+      "name": "Zig tests (Linux core)",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 124700745426,
+      "name": "Zig tests (macOS core)",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 124700745429,
+      "name": "Flatpak (x86_64)",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 124700745452,
+      "name": "macOS tests and universal app",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 124700745476,
+      "name": "Zig tests (libghostty-vt)",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 124700745582,
+      "name": "Flatpak (aarch64)",
+      "status": "completed"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 124706227931,
+      "name": "Publish beta prerelease",
+      "status": "completed"
+    }
+  ],
+  "suites": {
+    "linux_core": {
+      "passed": 4051,
+      "skipped": 45
+    },
+    "macos_core": {
+      "passed": 4075,
+      "skipped": 26
+    },
+    "libghostty_vt": {
+      "passed": 6943,
+      "skipped": 74
+    },
+    "swift": {
+      "passed": 263,
+      "skipped": 1,
+      "failed": 0
+    }
+  },
+  "stable_published": false
+}

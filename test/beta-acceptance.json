@@ -1,79 +1,88 @@
 {
   "upstream": "83fb95624b0439ee660c2679b43b38c8b63769cd",
   "baseline": "v1.3.2+ghostty2.3",
-  "candidate_commit": "9e3e4f3d4033f24fba358850de17250f2d8f97e7",
+  "candidate_commit": "18e595f7ef14a7a99c73d5fb748ee40774dd2d66",
   "promotion_allowed": false,
   "checks": [
     {
       "id": "linux_builds",
       "scope": "Wayland, X11, Nix and both Flatpak architectures",
       "status": "passed",
-      "evidence": "Wayland, X11, graphical smoke and Nix package/CLI checks passed in CI run 41251733719. Both x86_64 and aarch64 Flatpak packages passed in that run. The x86_64 packaged beta also passed local CLI and graphical checks in a disposable Flatpak installation."
+      "evidence": "CI run 41256397550 passed Wayland and X11 builds, the Wayland tab/split/background-exit regression, X11 PTY/input/resize, Nix package/CLI checks, and x86_64/aarch64 Flatpak packaging. Exact x86_64 package also passed local install/configuration/GUI/rollback and Wayland close-confirmation comparisons. See beta-evidence/ci-18e595f.json and flatpak-18e595f.json."
     },
     {
       "id": "macos_builds",
       "scope": "Swift suite, Zig suite and universal app bundle",
-      "status": "partial",
-      "evidence": "Run 41254441921: native framework and Swift app compiled; Swift suite passed 263 tests with 1 skip, and strict lifecycle Swift lint passed. The eager quick-terminal session and NoSuchProcess crash regressions are fixed. Universal release packaging and the full macOS core rerun are still in progress."
+      "status": "passed",
+      "evidence": "CI run 41256397550 passed 263 Swift tests (1 skip), strict lifecycle Swift lint, the complete macOS core suite, universal release framework and app packaging, signature verification and both CPU slices. Archive comparison retained macOS 13.0 minimum and the fork app identity, with no build-machine library paths or removed frameworks. Native release-app GUI acceptance remains a separate gate. See beta-evidence/macos-packages-18e595f.json."
     },
     {
       "id": "core_regressions",
       "scope": "Full core suite and libghostty-vt suite",
-      "status": "partial",
-      "evidence": "Before the process-exit correction, complete CI run 41251275147 suites passed: Linux core 4050 passed/45 skipped; macOS core 4074 passed/26 skipped; libghostty-vt 6943 passed/74 skipped. The new process-exit regression and complete suites must pass again for the corrected candidate."
+      "status": "passed",
+      "evidence": "Exact candidate CI run 41256397550: Linux core 4051 passed/45 skipped; macOS core 4075 passed/26 skipped; libghostty-vt 6943 passed/74 skipped. All jobs passed. See beta-evidence/ci-18e595f.json."
     },
     {
       "id": "configuration",
       "scope": "Existing config, themes and upstream/fork isolation",
       "status": "partial",
-      "evidence": "Local Debug and packaged ReleaseFast beta passed test/smoke-cli.sh: fork legacy/current configuration precedence, invalid configuration rejection, upstream configuration isolation, and fork custom-theme lookup despite a same-named upstream theme. Stable/beta/stable shared sample configuration and theme validation also passed. Real existing user profiles remain pending. A copy of the installed Linux profile (currently comments only) validated with both packages, without changing the original; richer native macOS profiles remain pending."
+      "evidence": "Exact packaged beta passed current/legacy fork config precedence, invalid config rejection, upstream namespace isolation and custom-theme lookup, plus stable/beta/stable shared sample-profile validation. A copy of the installed Linux profile (comments only) also validated with stable and an earlier beta, without changing the original. Richer native macOS profiles remain pending."
     },
     {
       "id": "quick_terminal_tabs",
       "scope": "Create, switch, reorder, rename, color, split and transfer tabs",
       "status": "partial",
-      "evidence": "The stable and packaged beta both passed headless Wayland creation of two quick-terminal tabs and a split, PTY input, switching, hide/show and closing a session while retaining the other. Native macOS lifecycle tests passed. Interactive reorder, rename, colors and transfers remain pending. See beta-evidence/wayland-a41bc3a.json."
+      "evidence": "CI and packaged Wayland comparisons passed two tabs, a split, PTY input, switching, hide/show and preserving the remaining session when one closes. macOS lifecycle unit tests passed. Interactive reorder, rename, colors and transfers remain pending. See beta-evidence/wayland-18e595f.json."
     },
     {
       "id": "background_sessions",
       "scope": "Process exit, clipboard prompts and focus on inactive tabs",
       "status": "partial",
-      "evidence": "On headless Wayland, a process exiting in an inactive split preserved the active tab focus and the remaining session, for both stable and beta. macOS ownership, pending clipboard request and background-exit lifecycle tests also passed in run 41254441921. Native clipboard-prompt interaction remains pending."
+      "evidence": "Native GTK initially lost active-tab focus after a background split exited. Restricting focus restoration to mapped surfaces fixed the exact failing sequence, which now passes locally and in CI. The packaged beta and stable comparison also passed. macOS ownership, clipboard-request lifetime and background-exit tests passed; native clipboard-prompt interaction remains pending."
     },
     {
       "id": "close_confirmation",
       "scope": "Cancel/accept close and quit with hidden and background running sessions",
-      "status": "pending",
-      "evidence": null
+      "status": "partial",
+      "evidence": "Stable and exact packaged beta both passed cancel/accept of a Wayland quick-terminal tab close: cancel preserved input to the same process; accept terminated only the chosen tab while another remained usable. Native GTK Debug also passed. Hidden-window quit and native macOS interaction remain pending."
     },
     {
       "id": "restoration",
       "scope": "Restore v1/v2/v3 saved state, selected tab, focused split and screen placement",
-      "status": "pending",
-      "evidence": null
+      "status": "partial",
+      "evidence": "The native Swift suite passed v1/v2 decoding, v3 roundtrip, malformed-tab fallback and screen-state cache tests. Reopening real saved profiles, selected splits and placement through native upgrade/rollback remains pending."
     },
     {
       "id": "desktop_behavior",
       "scope": "Hotkey, fullscreen, multiple monitors, hide/show, Wayland supported compositor",
       "status": "partial",
-      "evidence": "Isolated Xvfb tests passed for the beta and installed stable 1.3.2+ghostty2.3: real PTY startup, keyboard input, nonzero resized PTY dimensions, and clean exit. This does not cover visual fidelity, native compositor behavior or hotkeys. Stable and beta also passed the headless Sway quick-terminal tab/split/hide-show comparison. Native hotkeys, fullscreen and monitor behavior remain pending."
+      "evidence": "Exact candidate passed X11 PTY/input/resize and headless Sway quick-terminal tabs, splits, switching and hide/show. Native global shortcuts, fullscreen, real monitor layouts and display scales remain pending."
     },
     {
       "id": "install_upgrade_rollback",
       "scope": "Install beta, upgrade prior stable and roll back with config/state backup",
       "status": "partial",
-      "evidence": "test/smoke-flatpak.py passed for stable 1.3.2+ghostty2.3 -> beta 1.4.0-beta.1+a41bc3a -> stable, in a disposable installation. Shared sample configuration/theme hashes remained unchanged; each package passed PTY, keyboard, resize and clean exit. Bundle/commit evidence: beta-evidence/flatpak-a41bc3a.json. Native user-profile migration and macOS upgrade/rollback remain pending."
+      "evidence": "Exact x86_64 package passed stable 1.3.2+ghostty2.3 -> beta 1.4.0-beta.1+18e595f -> stable in a disposable installation. Shared sample configuration/theme hashes stayed unchanged; all three stages passed PTY, input, resize and clean exit. User installation was untouched. Native macOS and real saved-state migration remain pending. See beta-evidence/flatpak-18e595f.json."
     },
     {
       "id": "performance",
       "scope": "Compare launch, tab switching, rendering and idle resource use with prior stable",
-      "status": "pending",
-      "evidence": null
+      "status": "failed",
+      "evidence": "Software-rendered Linux comparison found higher resident memory. Five paired runs: median PTY startup 1394 ms stable vs 1405 ms beta; RSS 240.5 vs 297.0 MiB (+23.5%). Follow-ups still showed +43.3 MiB after 30 seconds and +46.4 MiB (+19.6%) after 120 seconds. Longer-idle CPU was comparable. The allocation cause and native GPU impact are unresolved; this is not evidence of a leak. Native rendering/scrolling/tab-switch parity remains pending. See beta-evidence/performance-18e595f.json."
     }
   ],
   "local_environment_notes": [
     "Two initial fontconfig tests failed with existing host caches. Both passed with a fresh cache and the full host font collection, and with system fontconfig. The complete local core rerun with isolated font caches passed (4052 passed, 43 skipped). No host cache was deleted or changed for remediation.",
-    "The beta smoke build is Debug; its timings cannot be compared fairly with the installed ReleaseFast stable Flatpak.",
-    "The stable Flatpak is built from 548ad6ea736f3e3c413dce36cef3db64f07df871; the behavioral test used temporary configuration, home, cache, state, display and D-Bus session."
+    "Local Debug builds were used for behavioral testing only. Performance comparisons used stable and beta ReleaseFast Flatpaks under the same runtime, isolated profiles and software-rendered Xvfb.",
+    "The installed stable app remains commit 548ad6ea736f3e3c413dce36cef3db64f07df871. Package switching and rollback were confined to disposable installations."
+  ],
+  "candidate_ci_run": "https://github.com/pihalf/ghostty2/actions/runs/41256397550",
+  "blocking_findings": [
+    {
+      "id": "linux_resident_memory",
+      "status": "open",
+      "evidence": "beta-evidence/performance-18e595f.json",
+      "next_step": "Identify the additional private/anonymous allocations and verify behavior on real graphics hardware before considering promotion."
+    }
   ]
 }
