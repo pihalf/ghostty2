@@ -970,10 +970,13 @@ pub const SplitTree = extern struct {
         }
 
         // Replacing our tree widget hierarchy can reset focus state.
-        // If we have a last-focused surface, restore focus to it.
+        // Restore focus only in a visible tree. A background tab can rebuild
+        // when one of its processes exits; focusing its unmapped surface
+        // would clear the active tab's keyboard focus. Newly mapped surfaces
+        // are handled by onRestoreFocus.
         if (priv.last_focused.get()) |v| {
             defer v.unref();
-            v.grabFocus();
+            if (v.getMapped()) v.grabFocus();
         }
 
         // Our split status may have changed

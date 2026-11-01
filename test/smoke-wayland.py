@@ -97,6 +97,10 @@ keybind = ctrl+shift+e=new_split:right
         processes = []
 
         def command(arguments):
+            if arguments[0] == "wtype":
+                # Each invocation adds a virtual keyboard. Allow its keymap
+                # and focus events to reach GTK before injecting the first key.
+                arguments = ["wtype", "-s", "500"] + arguments[1:]
             return runner + arguments if arguments[0] in ("sway", "swaymsg", "wtype", "grim") else arguments
 
         def start(arguments, name):
@@ -122,8 +126,7 @@ keybind = ctrl+shift+e=new_split:right
             raise RuntimeError(f"Timeout: {description}")
 
         def type_line(value):
-            run(["wtype", "-d", "30", value])
-            run(["wtype", "-k", "Return"])
+            run(["wtype", "-d", "30", value, "-s", "100", "-k", "Return"])
 
         def received(session, value):
             path = session / "input"
@@ -143,12 +146,24 @@ keybind = ctrl+shift+e=new_split:right
                 path.name for path in (root / "run").glob("wayland-*") if not path.name.endswith(".lock")
             )
             start([str(binary), "--config-default-files=false", f"--config-file={root}/ghostty.conf"], "app")
-            ipc = ["gdbus", "call", "--session", "--dest", "io.github.pihalf.ghostty2",
-                   "--object-path", "/io/github/pihalf/ghostty2", "--method"]
+            ipc = None
 
             def ipc_ready():
-                result = subprocess.run(ipc + ["org.gtk.Actions.List"], env=env, capture_output=True, timeout=5)
-                return result.returncode == 0
+                nonlocal ipc
+                # Debug/safe builds have a separate application ID. Probe only
+                # this test's private bus, which contains no user applications.
+                for suffix in ("", "-debug"):
+                    app_id = "io.github.pihalf.ghostty2" + suffix
+                    object_path = "/" + app_id.replace(".", "/").replace("-", "_")
+                    candidate = ["gdbus", "call", "--session", "--dest", app_id,
+                                 "--object-path", object_path, "--method"]
+                    result = subprocess.run(
+                        candidate + ["org.gtk.Actions.List"], env=env, capture_output=True, timeout=5
+                    )
+                    if result.returncode == 0:
+                        ipc = candidate
+                        return True
+                return False
 
             wait(ipc_ready, "application IPC")
             toggle = ipc + ["org.gtk.Actions.Activate", "toggle-quick-terminal", "[]", "{}"]
