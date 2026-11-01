@@ -5,6 +5,7 @@ const Allocator = std.mem.Allocator;
 const assert = std.debug.assert;
 const gio = @import("gio");
 const glib = @import("glib");
+const build_info = @import("build/info.zig");
 const Application = @import("class/application.zig").Application;
 
 const DesktopNotifications = @This();
@@ -54,7 +55,7 @@ pub fn send(
     defer notification.unref();
     notification.setBody(body);
 
-    const icon = gio.ThemedIcon.new("com.mitchellh.ghostty");
+    const icon = gio.ThemedIcon.new(build_info.base_application_id);
     defer icon.unref();
     notification.setIcon(icon.as(gio.Icon));
     notification.setDefaultActionAndTargetValue(
