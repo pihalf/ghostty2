@@ -177,6 +177,9 @@ in
         pkgs.xvfb-run
         pkgs.xdotool
         pkgs.dbus
+        pkgs.sway
+        pkgs.wtype
+        pkgs.grim
 
         bzip2
         expat

@@ -1,0 +1,58 @@
+{
+  "recorded_at": "2026-11-01T00:09:24.406416+00:00",
+  "baseline": "v1.3.2+ghostty2.3",
+  "candidate_commit": "a41bc3a513a4c0a9cda4fbc85d4cadcf5a5465b0",
+  "harness": "test/smoke-wayland.py",
+  "environment": "Headless Sway 1.12, pixman compositor, packaged ReleaseFast Flatpaks, software OpenGL, private D-Bus and profiles",
+  "limitations": [
+    "Does not validate native GPU performance, monitor placement, compositor hotkeys, clipboard prompts or macOS UI.",
+    "The baseline initially hit a keyboard-readiness timeout. Waiting for the initial layer-shell mapping before typing made the complete rerun pass."
+  ],
+  "stable": {
+    "passed": true,
+    "checks": [
+      "Wayland layer-shell quick terminal",
+      "create two tabs and a split",
+      "type into each PTY",
+      "hide/show preserves all three processes",
+      "switch back to first tab",
+      "background split exit preserves focus and the other split",
+      "closing first process preserves second tab"
+    ],
+    "first_input": "first-input\nafter-hide-show\nafter-background-exit\nexit\n",
+    "second_input": "second-input\nsurviving-tab\nexit\n",
+    "split_input": "split-input\n"
+  },
+  "beta": {
+    "passed": true,
+    "checks": [
+      "Wayland layer-shell quick terminal",
+      "create two tabs and a split",
+      "type into each PTY",
+      "hide/show preserves all three processes",
+      "switch back to first tab",
+      "background split exit preserves focus and the other split",
+      "closing first process preserves second tab"
+    ],
+    "first_input": "first-input\nafter-hide-show\nafter-background-exit\nexit\n",
+    "second_input": "second-input\nsurviving-tab\nexit\n",
+    "split_input": "split-input\n"
+  },
+  "installed_linux_profile": {
+    "source_sha256": "b99c8095955ef9cb1a26adcb57307515b15397e3e7fea32a2983c82942273afa",
+    "has_active_settings": false,
+    "stages": [
+      {
+        "branch": "stable",
+        "validation_passed": true,
+        "copy_unchanged": true
+      },
+      {
+        "branch": "beta",
+        "validation_passed": true,
+        "copy_unchanged": true
+      }
+    ],
+    "source_unchanged": true
+  }
+}

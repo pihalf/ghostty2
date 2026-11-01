@@ -163,6 +163,20 @@ jobs:
             -Dgtk-wayland=true \
             -Dgtk-x11=false
 
+      - name: Exercise quick-terminal tabs on an isolated Wayland compositor
+        run: |
+          nix develop -c python3 test/smoke-wayland.py "$PWD/zig-out/bin/ghostty2" \
+            --output /tmp/ghostty2-wayland-evidence
+
+      - name: Preserve Wayland smoke-test evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: wayland-smoke-results
+          path: /tmp/ghostty2-wayland-evidence
+          retention-days: 7
+          if-no-files-found: warn
+
       - name: Build the X11 application
         run: |
           nix develop -c zig build \
